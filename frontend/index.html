@@ -1,0 +1,2077 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Sorous AI</title>
+
+    <style>
+
+        /* ==========================================================
+           GLOBAL
+        ========================================================== */
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            color: white;
+
+            background:
+                linear-gradient(
+                    rgba(2, 7, 20, 0.65),
+                    rgba(2, 7, 20, 0.92)
+                ),
+                url("./images/background.png");
+
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+
+            overflow: hidden;
+        }
+
+
+        /* ==========================================================
+           AUTH PAGE
+        ========================================================== */
+
+        .app {
+            width: 100%;
+            height: 100vh;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 20px;
+        }
+
+
+        .auth-container {
+            width: 100%;
+            max-width: 680px;
+
+            max-height: 92vh;
+
+            overflow-y: auto;
+
+            padding: 48px 56px;
+
+            border-radius: 30px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(17, 31, 54, 0.97),
+                    rgba(5, 12, 27, 0.98)
+                );
+
+            border:
+                1px solid
+                rgba(130, 160, 220, 0.25);
+
+            box-shadow:
+                0 30px 80px
+                rgba(0, 0, 0, 0.60);
+
+            backdrop-filter:
+                blur(20px);
+
+            text-align: center;
+        }
+
+
+        .sorous-face {
+            width: 145px;
+            height: 145px;
+
+            object-fit: cover;
+
+            border-radius: 50%;
+
+            display: block;
+
+            margin:
+                0 auto
+                25px;
+
+            border:
+                3px solid
+                rgba(255, 255, 255, 0.12);
+
+            box-shadow:
+                0 0 20px #7d3cff,
+                0 0 50px rgba(116, 65, 255, 0.8);
+        }
+
+
+        h1 {
+            font-size: 48px;
+
+            line-height: 1.15;
+
+            margin:
+                0 0 18px;
+
+            font-weight: 800;
+        }
+
+
+        .subtitle {
+            color: #b9c5d9;
+
+            font-size: 19px;
+
+            line-height: 1.5;
+
+            margin-bottom: 35px;
+        }
+
+
+        /* ==========================================================
+           STATUS MESSAGE
+        ========================================================== */
+
+        .status-message {
+            display: none;
+
+            margin-bottom: 20px;
+
+            padding: 15px 18px;
+
+            border-radius: 14px;
+
+            font-size: 16px;
+
+            line-height: 1.4;
+        }
+
+
+        .status-message.error {
+            display: block;
+
+            color: #ffc1c1;
+
+            background:
+                rgba(255, 70, 70, 0.12);
+
+            border:
+                1px solid
+                rgba(255, 100, 100, 0.35);
+        }
+
+
+        .status-message.success {
+            display: block;
+
+            color: #b9ffd4;
+
+            background:
+                rgba(50, 220, 130, 0.10);
+
+            border:
+                1px solid
+                rgba(80, 255, 150, 0.30);
+        }
+
+
+        /* ==========================================================
+           FORM
+        ========================================================== */
+
+        .form-group {
+            text-align: left;
+
+            margin-bottom: 20px;
+        }
+
+
+        label {
+            display: block;
+
+            margin-bottom: 10px;
+
+            color: #e5e7eb;
+
+            font-size: 18px;
+
+            font-weight: 600;
+        }
+
+
+        input {
+            width: 100%;
+            height: 68px;
+
+            padding: 0 22px;
+
+            border-radius: 18px;
+
+            border:
+                1px solid
+                #40506c;
+
+            background:
+                #202b3e;
+
+            color: white;
+
+            font-size: 18px;
+
+            outline: none;
+
+            transition:
+                border 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+
+        input::placeholder {
+            color: #a3acba;
+        }
+
+
+        input:focus {
+            border-color:
+                #8b5cf6;
+
+            box-shadow:
+                0 0 0 3px
+                rgba(139, 92, 246, 0.18);
+        }
+
+
+        /* ==========================================================
+           AUTH BUTTON
+        ========================================================== */
+
+        .auth-btn {
+            width: 100%;
+            height: 70px;
+
+            margin-top: 15px;
+
+            border: none;
+
+            border-radius: 18px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #7737d6,
+                    #3568c8
+                );
+
+            color: white;
+
+            font-size: 22px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition:
+                opacity 0.2s ease,
+                transform 0.2s ease;
+        }
+
+
+        .auth-btn:hover {
+            opacity: 0.92;
+        }
+
+
+        .auth-btn:active {
+            transform: scale(0.99);
+        }
+
+
+        .auth-btn:disabled {
+            cursor: not-allowed;
+
+            opacity: 0.65;
+
+            transform: none;
+        }
+
+
+        /* ==========================================================
+           LOGIN / REGISTER SWITCH
+        ========================================================== */
+
+        .switch-text {
+            margin-top: 26px;
+
+            color: #b7c1d2;
+
+            font-size: 17px;
+        }
+
+
+        .switch-text span {
+            color: #c79cff;
+
+            font-weight: 700;
+
+            cursor: pointer;
+        }
+
+
+        /* ==========================================================
+           CHAT PAGE
+        ========================================================== */
+
+        .chat-page {
+            width: 100%;
+            height: 100vh;
+
+            display: none;
+
+            flex-direction: column;
+
+            background:
+                linear-gradient(
+                    rgba(2, 7, 20, 0.68),
+                    rgba(2, 7, 20, 0.92)
+                ),
+                url("./images/background.png");
+
+            background-size: cover;
+            background-position: center;
+        }
+
+
+        /* ==========================================================
+           CHAT HEADER
+        ========================================================== */
+
+        .chat-header {
+            height: 86px;
+
+            flex-shrink: 0;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 40px;
+
+            background:
+                rgba(9, 17, 35, 0.94);
+
+            border-bottom:
+                1px solid
+                rgba(255, 255, 255, 0.08);
+
+            backdrop-filter:
+                blur(12px);
+        }
+
+
+        .chat-brand {
+            display: flex;
+            align-items: center;
+
+            gap: 15px;
+        }
+
+
+        .chat-face {
+            width: 52px;
+            height: 52px;
+
+            border-radius: 50%;
+
+            object-fit: cover;
+
+            box-shadow:
+                0 0 18px
+                #7d3cff;
+        }
+
+
+        .chat-brand h2 {
+            margin: 0;
+
+            font-size: 27px;
+        }
+
+
+        .chat-brand small {
+            color: #aab6cc;
+
+            font-size: 14px;
+        }
+
+
+        .logout-btn {
+            padding:
+                13px 23px;
+
+            border: none;
+
+            border-radius: 12px;
+
+            background:
+                rgba(255, 80, 80, 0.15);
+
+            color: #ffb3b3;
+
+            cursor: pointer;
+
+            font-size: 16px;
+
+            font-weight: 600;
+
+            transition:
+                background 0.2s ease;
+        }
+
+
+        .logout-btn:hover {
+            background:
+                rgba(255, 80, 80, 0.25);
+        }
+
+
+        /* ==========================================================
+           CHAT MESSAGES
+        ========================================================== */
+
+        .messages {
+            flex: 1;
+
+            overflow-y: auto;
+
+            padding:
+                35px
+                max(20px, calc((100vw - 1100px) / 2));
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 18px;
+        }
+
+
+        .message {
+            max-width: 75%;
+
+            padding: 18px 22px;
+
+            border-radius: 22px;
+
+            font-size: 17px;
+
+            line-height: 1.55;
+
+            word-break: break-word;
+
+            white-space: pre-wrap;
+
+            box-shadow:
+                0 10px 25px
+                rgba(0, 0, 0, 0.12);
+        }
+
+
+        .user-message {
+            align-self: flex-end;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #7439d5,
+                    #3568c8
+                );
+
+            border-bottom-right-radius: 6px;
+        }
+
+
+        .ai-message {
+            align-self: flex-start;
+
+            background:
+                rgba(28, 40, 63, 0.94);
+
+            border:
+                1px solid
+                rgba(255, 255, 255, 0.08);
+
+            border-bottom-left-radius: 6px;
+        }
+
+
+        .system-message {
+            align-self: center;
+
+            max-width: 80%;
+
+            text-align: center;
+
+            padding: 12px 18px;
+
+            color: #ffd0d0;
+
+            background:
+                rgba(255, 80, 80, 0.12);
+
+            border:
+                1px solid
+                rgba(255, 100, 100, 0.35);
+        }
+
+
+        /* ==========================================================
+           CHAT INPUT
+        ========================================================== */
+
+        .chat-input-area {
+            flex-shrink: 0;
+
+            padding:
+                20px
+                max(20px, calc((100vw - 1100px) / 2));
+
+            display: flex;
+
+            gap: 15px;
+
+            background:
+                rgba(5, 12, 25, 0.92);
+
+            border-top:
+                1px solid
+                rgba(255, 255, 255, 0.05);
+        }
+
+
+        .chat-input {
+            flex: 1;
+
+            height: 64px;
+
+            border-radius: 18px;
+        }
+
+
+        .send-btn {
+            width: 150px;
+            height: 64px;
+
+            border: none;
+
+            border-radius: 18px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #7737d6,
+                    #3568c8
+                );
+
+            color: white;
+
+            font-size: 18px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+        }
+
+
+        .send-btn:disabled {
+            opacity: 0.65;
+
+            cursor: not-allowed;
+        }
+
+
+        /* ==========================================================
+           MOBILE
+        ========================================================== */
+
+        @media (max-width: 700px) {
+
+            body {
+                overflow: hidden;
+            }
+
+
+            .app {
+                padding: 12px;
+            }
+
+
+            .auth-container {
+                max-width: 100%;
+
+                padding:
+                    35px 25px;
+
+                border-radius: 24px;
+            }
+
+
+            h1 {
+                font-size: 36px;
+            }
+
+
+            .subtitle {
+                font-size: 17px;
+            }
+
+
+            .sorous-face {
+                width: 115px;
+                height: 115px;
+            }
+
+
+            .chat-header {
+                height: 76px;
+
+                padding: 0 15px;
+            }
+
+
+            .chat-brand h2 {
+                font-size: 22px;
+            }
+
+
+            .chat-face {
+                width: 45px;
+                height: 45px;
+            }
+
+
+            .logout-btn {
+                padding: 10px 15px;
+            }
+
+
+            .messages {
+                padding: 20px 15px;
+            }
+
+
+            .message {
+                max-width: 90%;
+
+                font-size: 16px;
+            }
+
+
+            .chat-input-area {
+                padding: 12px;
+
+                gap: 10px;
+            }
+
+
+            .chat-input {
+                height: 58px;
+
+                font-size: 16px;
+            }
+
+
+            .send-btn {
+                width: 95px;
+                height: 58px;
+            }
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+
+    <!-- ==========================================================
+         AUTH PAGE
+    ========================================================== -->
+
+    <div
+        class="app"
+        id="authPage"
+    >
+
+        <div class="auth-container">
+
+            <img
+                src="./images/sorous-face.png"
+                class="sorous-face"
+                alt="Sorous AI"
+            >
+
+
+            <h1 id="authTitle">
+                Welcome to Sorous
+            </h1>
+
+
+            <div
+                class="subtitle"
+                id="authSubtitle"
+            >
+                Login to continue your journey with Sorous AI
+            </div>
+
+
+            <div
+                id="authStatus"
+                class="status-message"
+            >
+            </div>
+
+
+            <!-- NAME -->
+
+            <div
+                class="form-group"
+                id="nameGroup"
+                style="display: none;"
+            >
+
+                <label for="name">
+                    Name
+                </label>
+
+                <input
+                    type="text"
+                    id="name"
+                    placeholder="Enter your name"
+                    autocomplete="name"
+                >
+
+            </div>
+
+
+            <!-- EMAIL -->
+
+            <div class="form-group">
+
+                <label for="email">
+                    Email
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="Enter your email"
+                    autocomplete="email"
+                >
+
+            </div>
+
+
+            <!-- PASSWORD -->
+
+            <div class="form-group">
+
+                <label for="password">
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    id="password"
+                    placeholder="Enter your password"
+                    autocomplete="current-password"
+                >
+
+            </div>
+
+
+            <button
+                class="auth-btn"
+                id="authButton"
+                type="button"
+            >
+                Login
+            </button>
+
+
+            <div
+                class="switch-text"
+                id="switchText"
+            >
+                Don't have an account?
+                <span id="switchMode">
+                    Create Account
+                </span>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==========================================================
+         CHAT PAGE
+    ========================================================== -->
+
+    <div
+        class="chat-page"
+        id="chatPage"
+    >
+
+        <!-- HEADER -->
+
+        <header class="chat-header">
+
+            <div class="chat-brand">
+
+                <img
+                    src="./images/sorous-face.png"
+                    class="chat-face"
+                    alt="Sorous AI"
+                >
+
+                <div>
+
+                    <h2>
+                        Sorous AI
+                    </h2>
+
+                    <small>
+                        Your AI companion
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <button
+                class="logout-btn"
+                id="logoutButton"
+                type="button"
+            >
+                Logout
+            </button>
+
+        </header>
+
+
+        <!-- MESSAGES -->
+
+        <main
+            class="messages"
+            id="messages"
+        >
+        </main>
+
+
+        <!-- INPUT -->
+
+        <div class="chat-input-area">
+
+            <input
+                type="text"
+                id="chatInput"
+                class="chat-input"
+                placeholder="Message Sorous..."
+                autocomplete="off"
+            >
+
+
+            <button
+                class="send-btn"
+                id="sendButton"
+                type="button"
+            >
+                Send
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==========================================================
+         JAVASCRIPT
+    ========================================================== -->
+
+    <script>
+
+        /* ==========================================================
+           API CONFIGURATION
+        ========================================================== */
+
+        const API_URL =
+            "http://127.0.0.1:8000";
+
+
+        /* ==========================================================
+           STATE
+        ========================================================== */
+
+        let isRegisterMode = false;
+
+        let isSendingMessage = false;
+
+
+        /* ==========================================================
+           ELEMENTS
+        ========================================================== */
+
+        const authPage =
+            document.getElementById(
+                "authPage"
+            );
+
+        const chatPage =
+            document.getElementById(
+                "chatPage"
+            );
+
+        const authButton =
+            document.getElementById(
+                "authButton"
+            );
+
+        const authStatus =
+            document.getElementById(
+                "authStatus"
+            );
+
+        const chatInput =
+            document.getElementById(
+                "chatInput"
+            );
+
+        const sendButton =
+            document.getElementById(
+                "sendButton"
+            );
+
+        const messages =
+            document.getElementById(
+                "messages"
+            );
+
+
+        /* ==========================================================
+           SAFE RESPONSE PARSER
+        ========================================================== */
+
+        async function getResponseData(response) {
+
+            try {
+
+                return await response.json();
+
+            } catch (error) {
+
+                return {};
+            }
+        }
+
+
+        /* ==========================================================
+           SHOW AUTH STATUS
+        ========================================================== */
+
+        function showAuthStatus(
+            message,
+            type = "error"
+        ) {
+
+            authStatus.textContent =
+                message;
+
+            authStatus.className =
+                "status-message " + type;
+        }
+
+
+        /* ==========================================================
+           CLEAR AUTH STATUS
+        ========================================================== */
+
+        function clearAuthStatus() {
+
+            authStatus.textContent =
+                "";
+
+            authStatus.className =
+                "status-message";
+        }
+
+
+        /* ==========================================================
+           TOKEN
+        ========================================================== */
+
+        function getToken() {
+
+            return localStorage.getItem(
+                "sorous_token"
+            );
+        }
+
+
+        function clearSession() {
+
+            localStorage.removeItem(
+                "sorous_token"
+            );
+
+            localStorage.removeItem(
+                "sorous_user"
+            );
+        }
+
+
+        /* ==========================================================
+           PAGE LOAD
+        ========================================================== */
+
+        window.addEventListener(
+            "load",
+            async function () {
+
+                const token =
+                    getToken();
+
+
+                if (!token) {
+                    return;
+                }
+
+
+                await openChat();
+            }
+        );
+
+
+        /* ==========================================================
+           SWITCH LOGIN / REGISTER
+        ========================================================== */
+
+        document
+            .getElementById("switchMode")
+            .addEventListener(
+                "click",
+                toggleAuthMode
+            );
+
+
+        function toggleAuthMode() {
+
+            isRegisterMode =
+                !isRegisterMode;
+
+
+            const title =
+                document.getElementById(
+                    "authTitle"
+                );
+
+            const subtitle =
+                document.getElementById(
+                    "authSubtitle"
+                );
+
+            const nameGroup =
+                document.getElementById(
+                    "nameGroup"
+                );
+
+            const switchText =
+                document.getElementById(
+                    "switchText"
+                );
+
+
+            clearAuthStatus();
+
+
+            if (isRegisterMode) {
+
+                title.textContent =
+                    "Create your Sorous account";
+
+                subtitle.textContent =
+                    "Your chats and memories will stay connected to your account";
+
+                nameGroup.style.display =
+                    "block";
+
+                authButton.textContent =
+                    "Create Account";
+
+                switchText.innerHTML =
+                    `Already have an account?
+                    <span id="switchMode">
+                        Login
+                    </span>`;
+
+
+                document
+                    .getElementById("switchMode")
+                    .addEventListener(
+                        "click",
+                        toggleAuthMode
+                    );
+
+            } else {
+
+                title.textContent =
+                    "Welcome to Sorous";
+
+                subtitle.textContent =
+                    "Login to continue your journey with Sorous AI";
+
+                nameGroup.style.display =
+                    "none";
+
+                authButton.textContent =
+                    "Login";
+
+                switchText.innerHTML =
+                    `Don't have an account?
+                    <span id="switchMode">
+                        Create Account
+                    </span>`;
+
+
+                document
+                    .getElementById("switchMode")
+                    .addEventListener(
+                        "click",
+                        toggleAuthMode
+                    );
+            }
+        }
+
+
+        /* ==========================================================
+           REGISTER / LOGIN
+        ========================================================== */
+
+        authButton.addEventListener(
+            "click",
+            handleAuth
+        );
+
+
+        async function handleAuth() {
+
+            clearAuthStatus();
+
+
+            const email =
+                document
+                    .getElementById("email")
+                    .value
+                    .trim();
+
+            const password =
+                document
+                    .getElementById("password")
+                    .value;
+
+
+            if (!email || !password) {
+
+                showAuthStatus(
+                    "Please enter your email and password."
+                );
+
+                return;
+            }
+
+
+            let endpoint =
+                "";
+
+            let payload =
+                {};
+
+
+            if (isRegisterMode) {
+
+                const name =
+                    document
+                        .getElementById("name")
+                        .value
+                        .trim();
+
+
+                if (!name) {
+
+                    showAuthStatus(
+                        "Please enter your name."
+                    );
+
+                    return;
+                }
+
+
+                endpoint =
+                    "/api/register";
+
+
+                payload = {
+
+                    name:
+                        name,
+
+                    email:
+                        email,
+
+                    password:
+                        password
+                };
+
+            } else {
+
+                endpoint =
+                    "/api/login";
+
+
+                payload = {
+
+                    email:
+                        email,
+
+                    password:
+                        password
+                };
+            }
+
+
+            const originalText =
+                authButton.textContent;
+
+
+            authButton.disabled =
+                true;
+
+
+            authButton.textContent =
+                isRegisterMode
+                    ? "Creating account..."
+                    : "Logging in...";
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        API_URL + endpoint,
+                        {
+
+                            method:
+                                "POST",
+
+                            headers: {
+
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body:
+                                JSON.stringify(
+                                    payload
+                                )
+                        }
+                    );
+
+
+                const data =
+                    await getResponseData(
+                        response
+                    );
+
+
+                if (!response.ok) {
+
+                    showAuthStatus(
+                        data.detail ||
+                        "Something went wrong. Please try again."
+                    );
+
+                    return;
+                }
+
+
+                if (
+                    !data.token ||
+                    !data.user
+                ) {
+
+                    showAuthStatus(
+                        "Login failed. Invalid server response."
+                    );
+
+                    return;
+                }
+
+
+                localStorage.setItem(
+                    "sorous_token",
+                    data.token
+                );
+
+
+                localStorage.setItem(
+                    "sorous_user",
+                    JSON.stringify(
+                        data.user
+                    )
+                );
+
+
+                await openChat();
+
+            } catch (error) {
+
+                console.error(
+                    "Auth error:",
+                    error
+                );
+
+
+                showAuthStatus(
+                    "Backend server connection failed. Make sure FastAPI is running on port 8000."
+                );
+
+            } finally {
+
+                authButton.disabled =
+                    false;
+
+
+                authButton.textContent =
+                    originalText;
+            }
+        }
+
+
+        /* ==========================================================
+           OPEN CHAT
+        ========================================================== */
+
+        async function openChat() {
+
+            authPage.style.display =
+                "none";
+
+            chatPage.style.display =
+                "flex";
+
+
+            messages.innerHTML =
+                "";
+
+
+            const historyLoaded =
+                await loadHistory();
+
+
+            /*
+             * If token is invalid,
+             * loadHistory() will automatically
+             * return the user to login page.
+             */
+
+            if (!historyLoaded) {
+                return;
+            }
+
+
+            /*
+             * Welcome message only when
+             * user has no saved messages.
+             */
+
+            if (
+                messages.children.length === 0
+            ) {
+
+                const user =
+                    getStoredUser();
+
+
+                if (user) {
+
+                    addMessage(
+                        "Sorous",
+                        `Hello ${user.name}! 👋 Welcome to Sorous AI. How can I help you today?`
+                    );
+                }
+            }
+
+
+            setTimeout(
+                function () {
+
+                    chatInput.focus();
+
+                },
+                100
+            );
+        }
+
+
+        /* ==========================================================
+           GET STORED USER
+        ========================================================== */
+
+        function getStoredUser() {
+
+            try {
+
+                const userData =
+                    localStorage.getItem(
+                        "sorous_user"
+                    );
+
+
+                if (!userData) {
+                    return null;
+                }
+
+
+                return JSON.parse(
+                    userData
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "User data error:",
+                    error
+                );
+
+
+                return null;
+            }
+        }
+
+
+        /* ==========================================================
+           LOAD HISTORY
+        ========================================================== */
+
+        async function loadHistory() {
+
+            const token =
+                getToken();
+
+
+            if (!token) {
+
+                forceLogin(
+                    "Your session has expired. Please login again."
+                );
+
+                return false;
+            }
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        API_URL + "/api/history",
+                        {
+
+                            method:
+                                "POST",
+
+                            headers: {
+
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body:
+                                JSON.stringify({
+
+                                    token:
+                                        token
+                                })
+                        }
+                    );
+
+
+                const data =
+                    await getResponseData(
+                        response
+                    );
+
+
+                /*
+                 * IMPORTANT:
+                 * Backend restart clears active_tokens
+                 * because tokens are currently stored in memory.
+                 *
+                 * This automatically removes the old token.
+                 */
+
+                if (
+                    response.status === 401
+                ) {
+
+                    forceLogin(
+                        "Your previous session expired. Please login again."
+                    );
+
+                    return false;
+                }
+
+
+                if (!response.ok) {
+
+                    addSystemMessage(
+                        data.detail ||
+                        "Could not load chat history."
+                    );
+
+                    return true;
+                }
+
+
+                if (
+                    !Array.isArray(
+                        data.messages
+                    )
+                ) {
+
+                    return true;
+                }
+
+
+                data.messages.forEach(
+                    function (message) {
+
+                        if (
+                            message.role ===
+                            "user"
+                        ) {
+
+                            addMessage(
+                                "You",
+                                message.content
+                            );
+
+                        } else {
+
+                            addMessage(
+                                "Sorous",
+                                message.content
+                            );
+                        }
+                    }
+                );
+
+
+                scrollMessagesToBottom();
+
+
+                return true;
+
+            } catch (error) {
+
+                console.error(
+                    "History error:",
+                    error
+                );
+
+
+                addSystemMessage(
+                    "Backend server is not available. Make sure FastAPI is running on port 8000."
+                );
+
+
+                return true;
+            }
+        }
+
+
+        /* ==========================================================
+           SEND MESSAGE
+        ========================================================== */
+
+        sendButton.addEventListener(
+            "click",
+            sendMessage
+        );
+
+
+        async function sendMessage() {
+
+            if (isSendingMessage) {
+                return;
+            }
+
+
+            const message =
+                chatInput.value.trim();
+
+
+            const token =
+                getToken();
+
+
+            if (!message) {
+                return;
+            }
+
+
+            if (!token) {
+
+                forceLogin(
+                    "Your session has expired. Please login again."
+                );
+
+                return;
+            }
+
+
+            isSendingMessage =
+                true;
+
+
+            addMessage(
+                "You",
+                message
+            );
+
+
+            chatInput.value =
+                "";
+
+
+            chatInput.disabled =
+                true;
+
+
+            sendButton.disabled =
+                true;
+
+
+            sendButton.textContent =
+                "Sending...";
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        API_URL + "/api/chat",
+                        {
+
+                            method:
+                                "POST",
+
+                            headers: {
+
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body:
+                                JSON.stringify({
+
+                                    message:
+                                        message,
+
+                                    token:
+                                        token
+                                })
+                        }
+                    );
+
+
+                const data =
+                    await getResponseData(
+                        response
+                    );
+
+
+                /*
+                 * Invalid token
+                 */
+
+                if (
+                    response.status === 401
+                ) {
+
+                    forceLogin(
+                        "Your session expired. Please login again."
+                    );
+
+                    return;
+                }
+
+
+                if (!response.ok) {
+
+                    addMessage(
+                        "Sorous",
+                        data.detail ||
+                        "Sorry, something went wrong."
+                    );
+
+                    return;
+                }
+
+
+                if (!data.response) {
+
+                    addMessage(
+                        "Sorous",
+                        "Sorry, I could not generate a response."
+                    );
+
+                    return;
+                }
+
+
+                addMessage(
+                    "Sorous",
+                    data.response
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "Chat error:",
+                    error
+                );
+
+
+                addMessage(
+                    "Sorous",
+                    "I cannot connect to the backend server right now."
+                );
+
+            } finally {
+
+                isSendingMessage =
+                    false;
+
+
+                chatInput.disabled =
+                    false;
+
+
+                sendButton.disabled =
+                    false;
+
+
+                sendButton.textContent =
+                    "Send";
+
+
+                chatInput.focus();
+            }
+        }
+
+
+        /* ==========================================================
+           ADD MESSAGE
+        ========================================================== */
+
+        function addMessage(
+            sender,
+            text
+        ) {
+
+            const messageDiv =
+                document.createElement(
+                    "div"
+                );
+
+
+            if (
+                sender === "You"
+            ) {
+
+                messageDiv.className =
+                    "message user-message";
+
+            } else {
+
+                messageDiv.className =
+                    "message ai-message";
+            }
+
+
+            /*
+             * Security:
+             * textContent prevents HTML injection.
+             */
+
+            messageDiv.textContent =
+                text;
+
+
+            messages.appendChild(
+                messageDiv
+            );
+
+
+            scrollMessagesToBottom();
+        }
+
+
+        /* ==========================================================
+           SYSTEM MESSAGE
+        ========================================================== */
+
+        function addSystemMessage(
+            text
+        ) {
+
+            const messageDiv =
+                document.createElement(
+                    "div"
+                );
+
+
+            messageDiv.className =
+                "message system-message";
+
+
+            messageDiv.textContent =
+                text;
+
+
+            messages.appendChild(
+                messageDiv
+            );
+
+
+            scrollMessagesToBottom();
+        }
+
+
+        /* ==========================================================
+           SCROLL
+        ========================================================== */
+
+        function scrollMessagesToBottom() {
+
+            messages.scrollTop =
+                messages.scrollHeight;
+        }
+
+
+        /* ==========================================================
+           ENTER KEY
+        ========================================================== */
+
+        chatInput.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (
+                    event.key === "Enter" &&
+                    !event.shiftKey
+                ) {
+
+                    event.preventDefault();
+
+                    sendMessage();
+                }
+            }
+        );
+
+
+        /* ==========================================================
+           AUTH ENTER KEY
+        ========================================================== */
+
+        document
+            .getElementById("email")
+            .addEventListener(
+                "keydown",
+                function (event) {
+
+                    if (
+                        event.key === "Enter"
+                    ) {
+
+                        handleAuth();
+                    }
+                }
+            );
+
+
+        document
+            .getElementById("password")
+            .addEventListener(
+                "keydown",
+                function (event) {
+
+                    if (
+                        event.key === "Enter"
+                    ) {
+
+                        handleAuth();
+                    }
+                }
+            );
+
+
+        /* ==========================================================
+           LOGOUT BUTTON
+        ========================================================== */
+
+        document
+            .getElementById("logoutButton")
+            .addEventListener(
+                "click",
+                logout
+            );
+
+
+        /* ==========================================================
+           LOGOUT
+        ========================================================== */
+
+        async function logout() {
+
+            const token =
+                getToken();
+
+
+            try {
+
+                if (token) {
+
+                    await fetch(
+                        API_URL + "/api/logout",
+                        {
+
+                            method:
+                                "POST",
+
+                            headers: {
+
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body:
+                                JSON.stringify({
+
+                                    token:
+                                        token
+                                })
+                        }
+                    );
+                }
+
+            } catch (error) {
+
+                console.error(
+                    "Logout API error:",
+                    error
+                );
+            }
+
+
+            forceLogin(
+                ""
+            );
+        }
+
+
+        /* ==========================================================
+           FORCE LOGIN
+        ========================================================== */
+
+        function forceLogin(
+            message
+        ) {
+
+            clearSession();
+
+
+            chatPage.style.display =
+                "none";
+
+
+            authPage.style.display =
+                "flex";
+
+
+            messages.innerHTML =
+                "";
+
+
+            chatInput.value =
+                "";
+
+
+            chatInput.disabled =
+                false;
+
+
+            sendButton.disabled =
+                false;
+
+
+            sendButton.textContent =
+                "Send";
+
+
+            document
+                .getElementById("password")
+                .value =
+                "";
+
+
+            if (message) {
+
+                showAuthStatus(
+                    message
+                );
+
+            } else {
+
+                clearAuthStatus();
+            }
+        }
+
+    </script>
+
+</body>
+
+</html>
+
