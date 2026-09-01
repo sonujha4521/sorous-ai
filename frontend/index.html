@@ -858,6 +858,52 @@
         }
 
 
+        /* =========================================================
+           SPEECH TO TEXT
+        ========================================================= */
+
+        .mic-button {
+            width: 46px;
+            height: 46px;
+            flex-shrink: 0;
+            border: 1px solid rgba(255,255,255,0.10);
+            border-radius: 13px;
+            background: rgba(255,255,255,0.055);
+            color: #dbe4f5;
+            font-size: 19px;
+            transition: 0.2s;
+        }
+
+        .mic-button:hover {
+            transform: translateY(-1px);
+            background: rgba(139,92,246,0.16);
+        }
+
+        .mic-button.listening {
+            background: rgba(239,68,68,0.16);
+            border-color: rgba(248,113,113,0.40);
+            color: #fca5a5;
+            animation: micPulse 1.2s infinite;
+        }
+
+        @keyframes micPulse {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(248,113,113,0.20);
+            }
+            50% {
+                box-shadow: 0 0 0 7px rgba(248,113,113,0.04);
+            }
+        }
+
+        .speech-status {
+            min-height: 15px;
+            margin-top: 5px;
+            text-align: center;
+            color: #8b96aa;
+            font-size: 10px;
+        }
+
+
         .send-button:disabled {
             opacity: 0.5;
 
@@ -1256,6 +1302,18 @@
 
 
                     <button
+                        id="micButton"
+                        class="mic-button"
+                        type="button"
+                        onclick="toggleSpeechRecognition()"
+                        aria-label="Voice input"
+                        title="Voice input"
+                    >
+                        🎙️
+                    </button>
+
+
+                    <button
                         id="sendButton"
                         class="send-button"
                         onclick="sendMessage()"
@@ -1265,6 +1323,13 @@
                     </button>
 
                 </div>
+
+
+                <div
+                    id="speechStatus"
+                    class="speech-status"
+                    aria-live="polite"
+                ></div>
 
 
                 <div class="input-hint">
@@ -1344,6 +1409,123 @@
 
         const sendButton =
             document.getElementById("sendButton");
+
+        const micButton =
+            document.getElementById("micButton");
+
+        const speechStatus =
+            document.getElementById("speechStatus");
+
+
+        /* =========================================================
+           SPEECH TO TEXT
+        ========================================================= */
+
+        const SpeechRecognition =
+            window.SpeechRecognition ||
+            window.webkitSpeechRecognition;
+
+        let speechRecognition = null;
+        let isListening = false;
+        let speechBaseText = "";
+
+        if (SpeechRecognition) {
+
+            speechRecognition =
+                new SpeechRecognition();
+
+            speechRecognition.lang = "hi-IN";
+            speechRecognition.continuous = false;
+            speechRecognition.interimResults = true;
+            speechRecognition.maxAlternatives = 1;
+
+            speechRecognition.onstart = function () {
+                isListening = true;
+                micButton.classList.add("listening");
+                micButton.textContent = "⏹️";
+                speechStatus.textContent =
+                    "Sun raha hoon... boliye 🎙️";
+            };
+
+            speechRecognition.onresult = function (event) {
+                let finalText = "";
+                let interimText = "";
+
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    const text = event.results[i][0].transcript;
+
+                    if (event.results[i].isFinal) {
+                        finalText += text;
+                    } else {
+                        interimText += text;
+                    }
+                }
+
+                const combined =
+                    (speechBaseText + " " + finalText).trim();
+
+                chatInput.value =
+                    (combined + (interimText ? " " + interimText : "")).trim();
+
+                autoResize();
+            };
+
+            speechRecognition.onerror = function (event) {
+                console.error("Speech recognition error:", event.error);
+
+                if (event.error === "not-allowed" || event.error === "service-not-allowed") {
+                    speechStatus.textContent =
+                        "Microphone permission allow karo.";
+                } else if (event.error === "no-speech") {
+                    speechStatus.textContent =
+                        "Awaaz nahi mili, dobara try karo.";
+                } else {
+                    speechStatus.textContent =
+                        "Voice input error. Dobara try karo.";
+                }
+            };
+
+            speechRecognition.onend = function () {
+                isListening = false;
+                micButton.classList.remove("listening");
+                micButton.textContent = "🎙️";
+
+                setTimeout(function () {
+                    if (!isListening) {
+                        speechStatus.textContent = "";
+                    }
+                }, 1800);
+            };
+
+        } else {
+
+            micButton.disabled = true;
+            micButton.title =
+                "Speech-to-text is not supported in this browser";
+            speechStatus.textContent =
+                "Voice input is not supported in this browser.";
+        }
+
+
+        function toggleSpeechRecognition() {
+
+            if (!speechRecognition) {
+                return;
+            }
+
+            if (isListening) {
+                speechRecognition.stop();
+                return;
+            }
+
+            speechBaseText = chatInput.value.trim();
+
+            try {
+                speechRecognition.start();
+            } catch (error) {
+                console.error("Speech start error:", error);
+            }
+        }
 
 
         /* =========================================================
