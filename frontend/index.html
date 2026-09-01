@@ -1,7 +1,5 @@
-
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
 
@@ -10,58 +8,148 @@
         content="width=device-width, initial-scale=1.0"
     >
 
+    <meta
+        name="theme-color"
+        content="#070b16"
+    >
+
     <title>Sorous AI</title>
 
     <style>
 
-        /* ==========================================================
-           GLOBAL
-        ========================================================== */
+        /* =========================================================
+           RESET
+        ========================================================= */
 
         * {
+            margin: 0;
+            padding: 0;
             box-sizing: border-box;
         }
+
 
         html,
         body {
             width: 100%;
             height: 100%;
-            margin: 0;
-            padding: 0;
         }
+
 
         body {
             font-family:
+                Inter,
                 Arial,
                 Helvetica,
                 sans-serif;
 
-            color: white;
+            color: #ffffff;
 
             background:
                 linear-gradient(
-                    rgba(2, 7, 20, 0.65),
-                    rgba(2, 7, 20, 0.92)
+                    rgba(3, 7, 18, 0.68),
+                    rgba(3, 7, 18, 0.90)
                 ),
                 url("./images/background.png");
 
             background-size: cover;
             background-position: center;
+            background-repeat: no-repeat;
             background-attachment: fixed;
 
             overflow: hidden;
         }
 
 
-        /* ==========================================================
-           AUTH PAGE
-        ========================================================== */
+        button,
+        input,
+        textarea {
+            font-family: inherit;
+        }
 
-        .app {
+
+        button {
+            cursor: pointer;
+        }
+
+
+        /* =========================================================
+           LOADING SCREEN
+        ========================================================= */
+
+        #loadingScreen {
+            position: fixed;
+            inset: 0;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+
+            gap: 18px;
+
+            background: #050812;
+
+            z-index: 9999;
+        }
+
+
+        .loading-face {
+            width: 105px;
+            height: 105px;
+
+            object-fit: cover;
+
+            border-radius: 50%;
+
+            border: 2px solid rgba(255,255,255,0.15);
+
+            box-shadow:
+                0 0 25px rgba(124,58,237,0.9),
+                0 0 70px rgba(59,130,246,0.45);
+
+            animation: pulse 2s infinite;
+        }
+
+
+        .loading-title {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+
+        .loading-text {
+            color: #9ca3af;
+            font-size: 14px;
+        }
+
+
+        @keyframes pulse {
+
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.08);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+
+        }
+
+
+        /* =========================================================
+           AUTH PAGE
+        ========================================================= */
+
+        #authPage {
             width: 100%;
             height: 100vh;
 
-            display: flex;
+            display: none;
+
             align-items: center;
             justify-content: center;
 
@@ -69,643 +157,858 @@
         }
 
 
-        .auth-container {
+        .auth-card {
             width: 100%;
-            max-width: 680px;
+            max-width: 460px;
 
-            max-height: 92vh;
+            padding: 42px;
 
-            overflow-y: auto;
-
-            padding: 48px 56px;
-
-            border-radius: 30px;
+            border-radius: 28px;
 
             background:
                 linear-gradient(
                     145deg,
-                    rgba(17, 31, 54, 0.97),
-                    rgba(5, 12, 27, 0.98)
+                    rgba(15, 25, 48, 0.96),
+                    rgba(5, 10, 24, 0.97)
                 );
 
             border:
-                1px solid
-                rgba(130, 160, 220, 0.25);
+                1px solid rgba(255,255,255,0.12);
+
+            backdrop-filter: blur(20px);
 
             box-shadow:
-                0 30px 80px
-                rgba(0, 0, 0, 0.60);
-
-            backdrop-filter:
-                blur(20px);
-
-            text-align: center;
+                0 30px 100px rgba(0,0,0,0.60);
         }
 
 
-        .sorous-face {
-            width: 145px;
-            height: 145px;
+        .auth-face {
+            width: 125px;
+            height: 125px;
+
+            display: block;
+
+            margin: 0 auto 24px;
 
             object-fit: cover;
 
             border-radius: 50%;
 
-            display: block;
-
-            margin:
-                0 auto
-                25px;
-
             border:
-                3px solid
-                rgba(255, 255, 255, 0.12);
+                3px solid rgba(255,255,255,0.12);
 
             box-shadow:
-                0 0 20px #7d3cff,
-                0 0 50px rgba(116, 65, 255, 0.8);
+                0 0 25px rgba(124,58,237,0.85),
+                0 0 65px rgba(59,130,246,0.30);
         }
 
 
-        h1 {
-            font-size: 48px;
+        .auth-title {
+            text-align: center;
 
-            line-height: 1.15;
-
-            margin:
-                0 0 18px;
-
+            font-size: 34px;
             font-weight: 800;
+
+            margin-bottom: 10px;
         }
 
 
-        .subtitle {
-            color: #b9c5d9;
+        .auth-subtitle {
+            text-align: center;
 
-            font-size: 19px;
+            color: #aeb9cc;
 
             line-height: 1.5;
 
-            margin-bottom: 35px;
+            font-size: 15px;
+
+            margin-bottom: 30px;
         }
 
 
-        /* ==========================================================
-           STATUS MESSAGE
-        ========================================================== */
+        /* =========================================================
+           FORM
+        ========================================================= */
 
-        .status-message {
-            display: none;
+        .form-group {
+            margin-bottom: 18px;
+        }
 
-            margin-bottom: 20px;
 
-            padding: 15px 18px;
+        .form-group label {
+            display: block;
+
+            margin-bottom: 8px;
+
+            font-size: 14px;
+
+            color: #d8deea;
+        }
+
+
+        .form-input {
+            width: 100%;
+
+            height: 52px;
+
+            padding: 0 16px;
 
             border-radius: 14px;
 
-            font-size: 16px;
-
-            line-height: 1.4;
-        }
-
-
-        .status-message.error {
-            display: block;
-
-            color: #ffc1c1;
+            border:
+                1px solid rgba(255,255,255,0.12);
 
             background:
-                rgba(255, 70, 70, 0.12);
+                rgba(255,255,255,0.055);
 
-            border:
-                1px solid
-                rgba(255, 100, 100, 0.35);
-        }
-
-
-        .status-message.success {
-            display: block;
-
-            color: #b9ffd4;
-
-            background:
-                rgba(50, 220, 130, 0.10);
-
-            border:
-                1px solid
-                rgba(80, 255, 150, 0.30);
-        }
-
-
-        /* ==========================================================
-           FORM
-        ========================================================== */
-
-        .form-group {
-            text-align: left;
-
-            margin-bottom: 20px;
-        }
-
-
-        label {
-            display: block;
-
-            margin-bottom: 10px;
-
-            color: #e5e7eb;
-
-            font-size: 18px;
-
-            font-weight: 600;
-        }
-
-
-        input {
-            width: 100%;
-            height: 68px;
-
-            padding: 0 22px;
-
-            border-radius: 18px;
-
-            border:
-                1px solid
-                #40506c;
-
-            background:
-                #202b3e;
-
-            color: white;
-
-            font-size: 18px;
+            color: #ffffff;
 
             outline: none;
 
-            transition:
-                border 0.2s ease,
-                box-shadow 0.2s ease;
+            transition: 0.2s;
         }
 
 
-        input::placeholder {
-            color: #a3acba;
+        .form-input::placeholder {
+            color: #6f7b90;
         }
 
 
-        input:focus {
-            border-color:
-                #8b5cf6;
+        .form-input:focus {
+            border-color: #8b5cf6;
 
             box-shadow:
-                0 0 0 3px
-                rgba(139, 92, 246, 0.18);
+                0 0 0 3px rgba(139,92,246,0.13);
         }
 
 
-        /* ==========================================================
+        #nameGroup {
+            display: none;
+        }
+
+
+        /* =========================================================
            AUTH BUTTON
-        ========================================================== */
+        ========================================================= */
 
-        .auth-btn {
+        .auth-button {
             width: 100%;
-            height: 70px;
 
-            margin-top: 15px;
+            height: 52px;
+
+            margin-top: 8px;
 
             border: none;
 
-            border-radius: 18px;
-
-            background:
-                linear-gradient(
-                    90deg,
-                    #7737d6,
-                    #3568c8
-                );
+            border-radius: 14px;
 
             color: white;
 
-            font-size: 22px;
-
+            font-size: 16px;
             font-weight: 700;
 
-            cursor: pointer;
+            background:
+                linear-gradient(
+                    135deg,
+                    #7c3aed,
+                    #4f46e5
+                );
 
-            transition:
-                opacity 0.2s ease,
-                transform 0.2s ease;
+            box-shadow:
+                0 10px 30px rgba(124,58,237,0.30);
+
+            transition: 0.2s;
         }
 
 
-        .auth-btn:hover {
-            opacity: 0.92;
+        .auth-button:hover {
+            transform: translateY(-1px);
+
+            box-shadow:
+                0 14px 35px rgba(124,58,237,0.42);
         }
 
 
-        .auth-btn:active {
-            transform: scale(0.99);
-        }
+        .auth-button:disabled {
+            opacity: 0.6;
 
-
-        .auth-btn:disabled {
             cursor: not-allowed;
-
-            opacity: 0.65;
 
             transform: none;
         }
 
 
-        /* ==========================================================
-           LOGIN / REGISTER SWITCH
-        ========================================================== */
+        .auth-error {
+            min-height: 20px;
 
-        .switch-text {
-            margin-top: 26px;
+            margin-top: 14px;
 
-            color: #b7c1d2;
+            text-align: center;
 
-            font-size: 17px;
-        }
-
-
-        .switch-text span {
-            color: #c79cff;
-
-            font-weight: 700;
-
-            cursor: pointer;
-        }
-
-
-        /* ==========================================================
-           CHAT PAGE
-        ========================================================== */
-
-        .chat-page {
-            width: 100%;
-            height: 100vh;
-
-            display: none;
-
-            flex-direction: column;
-
-            background:
-                linear-gradient(
-                    rgba(2, 7, 20, 0.68),
-                    rgba(2, 7, 20, 0.92)
-                ),
-                url("./images/background.png");
-
-            background-size: cover;
-            background-position: center;
-        }
-
-
-        /* ==========================================================
-           CHAT HEADER
-        ========================================================== */
-
-        .chat-header {
-            height: 86px;
-
-            flex-shrink: 0;
-
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-
-            padding: 0 40px;
-
-            background:
-                rgba(9, 17, 35, 0.94);
-
-            border-bottom:
-                1px solid
-                rgba(255, 255, 255, 0.08);
-
-            backdrop-filter:
-                blur(12px);
-        }
-
-
-        .chat-brand {
-            display: flex;
-            align-items: center;
-
-            gap: 15px;
-        }
-
-
-        .chat-face {
-            width: 52px;
-            height: 52px;
-
-            border-radius: 50%;
-
-            object-fit: cover;
-
-            box-shadow:
-                0 0 18px
-                #7d3cff;
-        }
-
-
-        .chat-brand h2 {
-            margin: 0;
-
-            font-size: 27px;
-        }
-
-
-        .chat-brand small {
-            color: #aab6cc;
+            color: #f87171;
 
             font-size: 14px;
         }
 
 
-        .logout-btn {
-            padding:
-                13px 23px;
+        .switch-area {
+            margin-top: 24px;
 
+            text-align: center;
+
+            color: #8995aa;
+
+            font-size: 14px;
+        }
+
+
+        .switch-button {
             border: none;
 
-            border-radius: 12px;
+            background: none;
 
-            background:
-                rgba(255, 80, 80, 0.15);
+            color: #a78bfa;
 
-            color: #ffb3b3;
+            font-weight: 700;
 
-            cursor: pointer;
-
-            font-size: 16px;
-
-            font-weight: 600;
-
-            transition:
-                background 0.2s ease;
+            margin-left: 5px;
         }
 
 
-        .logout-btn:hover {
-            background:
-                rgba(255, 80, 80, 0.25);
+        .switch-button:hover {
+            text-decoration: underline;
         }
 
 
-        /* ==========================================================
-           CHAT MESSAGES
-        ========================================================== */
+        /* =========================================================
+           CHAT PAGE
+        ========================================================= */
+
+        #chatPage {
+            width: 100%;
+            height: 100vh;
+
+            display: none;
+
+            align-items: center;
+            justify-content: center;
+
+            padding: 18px;
+        }
+
+
+        .chat-container {
+            width: 100%;
+            max-width: 1050px;
+
+            height: calc(100vh - 36px);
+
+            display: flex;
+            flex-direction: column;
+
+            overflow: hidden;
+
+            border-radius: 25px;
+
+            background:
+                rgba(5, 10, 23, 0.90);
+
+            border:
+                1px solid rgba(255,255,255,0.11);
+
+            backdrop-filter: blur(18px);
+
+            box-shadow:
+                0 30px 100px rgba(0,0,0,0.60);
+        }
+
+
+        /* =========================================================
+           CHAT HEADER
+        ========================================================= */
+
+        .chat-header {
+            min-height: 78px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 12px 18px;
+
+            border-bottom:
+                1px solid rgba(255,255,255,0.08);
+
+            background:
+                rgba(10,16,32,0.72);
+        }
+
+
+        .chat-brand {
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+        }
+
+
+        .chat-face {
+            width: 48px;
+            height: 48px;
+
+            object-fit: cover;
+
+            border-radius: 50%;
+
+            border:
+                2px solid rgba(255,255,255,0.12);
+
+            box-shadow:
+                0 0 18px rgba(124,58,237,0.60);
+        }
+
+
+        .brand-name {
+            font-size: 19px;
+            font-weight: 800;
+        }
+
+
+        .brand-status {
+            display: flex;
+
+            align-items: center;
+
+            gap: 6px;
+
+            margin-top: 3px;
+
+            color: #7f8ba0;
+
+            font-size: 12px;
+        }
+
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+
+            border-radius: 50%;
+
+            background: #22c55e;
+
+            box-shadow:
+                0 0 8px rgba(34,197,94,0.8);
+        }
+
+
+        .header-actions {
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+        }
+
+
+        .user-name {
+            color: #b9c3d4;
+
+            font-size: 13px;
+
+            margin-right: 6px;
+        }
+
+
+        .logout-button {
+            height: 38px;
+
+            padding: 0 14px;
+
+            border-radius: 10px;
+
+            border:
+                1px solid rgba(248,113,113,0.20);
+
+            background:
+                rgba(239,68,68,0.08);
+
+            color: #fca5a5;
+
+            font-size: 13px;
+
+            transition: 0.2s;
+        }
+
+
+        .logout-button:hover {
+            background:
+                rgba(239,68,68,0.16);
+        }
+
+
+        /* =========================================================
+           MESSAGES
+        ========================================================= */
 
         .messages {
             flex: 1;
 
             overflow-y: auto;
 
-            padding:
-                35px
-                max(20px, calc((100vw - 1100px) / 2));
+            padding: 26px 22px;
 
+            scroll-behavior: smooth;
+        }
+
+
+        .messages::-webkit-scrollbar {
+            width: 7px;
+        }
+
+
+        .messages::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+
+        .messages::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.12);
+
+            border-radius: 20px;
+        }
+
+
+        .message-row {
             display: flex;
 
-            flex-direction: column;
+            margin-bottom: 18px;
 
-            gap: 18px;
+            width: 100%;
         }
 
 
-        .message {
-            max-width: 75%;
-
-            padding: 18px 22px;
-
-            border-radius: 22px;
-
-            font-size: 17px;
-
-            line-height: 1.55;
-
-            word-break: break-word;
-
-            white-space: pre-wrap;
-
-            box-shadow:
-                0 10px 25px
-                rgba(0, 0, 0, 0.12);
+        .message-row.user {
+            justify-content: flex-end;
         }
 
 
-        .user-message {
-            align-self: flex-end;
+        .message-row.assistant {
+            justify-content: flex-start;
+        }
+
+
+        .message-inner {
+            display: flex;
+
+            align-items: flex-start;
+
+            gap: 10px;
+
+            max-width: 82%;
+        }
+
+
+        .message-row.user .message-inner {
+            flex-direction: row-reverse;
+        }
+
+
+        .message-avatar {
+            width: 34px;
+            height: 34px;
+
+            flex-shrink: 0;
+
+            object-fit: cover;
+
+            border-radius: 50%;
+
+            border:
+                1px solid rgba(255,255,255,0.10);
+        }
+
+
+        .user-avatar {
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
 
             background:
                 linear-gradient(
                     135deg,
-                    #7439d5,
-                    #3568c8
+                    #4f46e5,
+                    #7c3aed
                 );
 
-            border-bottom-right-radius: 6px;
+            color: white;
+
+            font-size: 13px;
+            font-weight: 700;
         }
 
 
-        .ai-message {
-            align-self: flex-start;
+        .message-bubble {
+            padding: 12px 15px;
 
+            border-radius: 16px;
+
+            white-space: pre-wrap;
+
+            word-break: break-word;
+
+            line-height: 1.55;
+
+            font-size: 15px;
+        }
+
+
+        .message-row.assistant
+        .message-bubble {
             background:
-                rgba(28, 40, 63, 0.94);
+                rgba(255,255,255,0.065);
 
             border:
-                1px solid
-                rgba(255, 255, 255, 0.08);
+                1px solid rgba(255,255,255,0.08);
 
-            border-bottom-left-radius: 6px;
+            border-top-left-radius: 5px;
+
+            color: #edf2fa;
         }
 
 
-        .system-message {
-            align-self: center;
-
-            max-width: 80%;
-
-            text-align: center;
-
-            padding: 12px 18px;
-
-            color: #ffd0d0;
-
+        .message-row.user
+        .message-bubble {
             background:
-                rgba(255, 80, 80, 0.12);
+                linear-gradient(
+                    135deg,
+                    #5b21b6,
+                    #4338ca
+                );
 
             border:
-                1px solid
-                rgba(255, 100, 100, 0.35);
+                1px solid rgba(167,139,250,0.20);
+
+            border-top-right-radius: 5px;
+
+            color: white;
         }
 
 
-        /* ==========================================================
-           CHAT INPUT
-        ========================================================== */
+        .message-time {
+            margin-top: 5px;
 
-        .chat-input-area {
-            flex-shrink: 0;
+            color: #69758a;
 
-            padding:
-                20px
-                max(20px, calc((100vw - 1100px) / 2));
+            font-size: 10px;
+        }
 
+
+        .message-row.user
+        .message-time {
+            text-align: right;
+        }
+
+
+        /* =========================================================
+           TYPING
+        ========================================================= */
+
+        .typing-bubble {
             display: flex;
 
-            gap: 15px;
+            align-items: center;
 
-            background:
-                rgba(5, 12, 25, 0.92);
+            gap: 5px;
+        }
+
+
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+
+            border-radius: 50%;
+
+            background: #a78bfa;
+
+            animation: typing 1.2s infinite;
+        }
+
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.15s;
+        }
+
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.30s;
+        }
+
+
+        @keyframes typing {
+
+            0%,
+            60%,
+            100% {
+                opacity: 0.3;
+                transform: translateY(0);
+            }
+
+            30% {
+                opacity: 1;
+                transform: translateY(-3px);
+            }
+
+        }
+
+
+        /* =========================================================
+           INPUT
+        ========================================================= */
+
+        .chat-input-area {
+            padding: 14px 18px 18px;
 
             border-top:
-                1px solid
-                rgba(255, 255, 255, 0.05);
+                1px solid rgba(255,255,255,0.08);
+
+            background:
+                rgba(7,12,25,0.72);
         }
 
 
-        .chat-input {
+        .input-wrapper {
+            display: flex;
+
+            align-items: flex-end;
+
+            gap: 10px;
+
+            padding: 8px;
+
+            border-radius: 16px;
+
+            background:
+                rgba(255,255,255,0.055);
+
+            border:
+                1px solid rgba(255,255,255,0.10);
+        }
+
+
+        #chatInput {
             flex: 1;
 
-            height: 64px;
+            min-height: 42px;
+            max-height: 140px;
 
-            border-radius: 18px;
-        }
-
-
-        .send-btn {
-            width: 150px;
-            height: 64px;
+            resize: none;
 
             border: none;
 
-            border-radius: 18px;
+            outline: none;
+
+            background: transparent;
+
+            color: white;
+
+            padding: 10px 9px;
+
+            font-size: 15px;
+
+            line-height: 1.45;
+        }
+
+
+        #chatInput::placeholder {
+            color: #6e7b91;
+        }
+
+
+        .send-button {
+            width: 46px;
+            height: 46px;
+
+            flex-shrink: 0;
+
+            border: none;
+
+            border-radius: 13px;
 
             background:
                 linear-gradient(
-                    90deg,
-                    #7737d6,
-                    #3568c8
+                    135deg,
+                    #7c3aed,
+                    #4f46e5
                 );
 
             color: white;
 
             font-size: 18px;
 
-            font-weight: 700;
-
-            cursor: pointer;
+            transition: 0.2s;
         }
 
 
-        .send-btn:disabled {
-            opacity: 0.65;
+        .send-button:hover {
+            transform: translateY(-1px);
+        }
+
+
+        .send-button:disabled {
+            opacity: 0.5;
 
             cursor: not-allowed;
+
+            transform: none;
         }
 
 
-        /* ==========================================================
+        .input-hint {
+            text-align: center;
+
+            margin-top: 8px;
+
+            color: #5f6b80;
+
+            font-size: 11px;
+        }
+
+
+        /* =========================================================
            MOBILE
-        ========================================================== */
+        ========================================================= */
 
         @media (max-width: 700px) {
 
             body {
-                overflow: hidden;
+                background-attachment: scroll;
             }
 
 
-            .app {
+            #authPage {
                 padding: 12px;
             }
 
 
-            .auth-container {
-                max-width: 100%;
+            .auth-card {
+                padding: 30px 22px;
 
-                padding:
-                    35px 25px;
-
-                border-radius: 24px;
+                border-radius: 22px;
             }
 
 
-            h1 {
-                font-size: 36px;
+            .auth-face {
+                width: 100px;
+                height: 100px;
             }
 
 
-            .subtitle {
-                font-size: 17px;
+            .auth-title {
+                font-size: 28px;
             }
 
 
-            .sorous-face {
-                width: 115px;
-                height: 115px;
+            .auth-subtitle {
+                font-size: 14px;
+            }
+
+
+            #chatPage {
+                padding: 0;
+            }
+
+
+            .chat-container {
+                height: 100vh;
+
+                border-radius: 0;
+
+                border: none;
             }
 
 
             .chat-header {
-                height: 76px;
+                min-height: 70px;
 
-                padding: 0 15px;
-            }
-
-
-            .chat-brand h2 {
-                font-size: 22px;
+                padding: 10px 12px;
             }
 
 
             .chat-face {
-                width: 45px;
-                height: 45px;
+                width: 42px;
+                height: 42px;
             }
 
 
-            .logout-btn {
-                padding: 10px 15px;
+            .brand-name {
+                font-size: 17px;
+            }
+
+
+            .user-name {
+                display: none;
+            }
+
+
+            .logout-button {
+                padding: 0 10px;
             }
 
 
             .messages {
-                padding: 20px 15px;
+                padding: 18px 12px;
             }
 
 
-            .message {
-                max-width: 90%;
+            .message-inner {
+                max-width: 92%;
+            }
 
-                font-size: 16px;
+
+            .message-bubble {
+                font-size: 14px;
+
+                padding: 10px 12px;
             }
 
 
             .chat-input-area {
-                padding: 12px;
+                padding: 10px;
+            }
 
-                gap: 10px;
+        }
+
+
+        /* =========================================================
+           SMALL MOBILE
+        ========================================================= */
+
+        @media (max-width: 420px) {
+
+            .auth-card {
+                padding: 25px 17px;
             }
 
 
-            .chat-input {
-                height: 58px;
-
-                font-size: 16px;
+            .auth-title {
+                font-size: 25px;
             }
 
 
-            .send-btn {
-                width: 95px;
-                height: 58px;
+            .message-avatar {
+                width: 30px;
+                height: 30px;
             }
+
+
+            .message-inner {
+                gap: 7px;
+            }
+
         }
 
     </style>
@@ -715,42 +1018,59 @@
 <body>
 
 
-    <!-- ==========================================================
+    <!-- =========================================================
+         LOADING
+    ========================================================= -->
+
+    <div id="loadingScreen">
+
+        <img
+            src="./images/sorous-face.png"
+            class="loading-face"
+            alt="Sorous"
+        >
+
+        <div class="loading-title">
+            Sorous AI
+        </div>
+
+        <div class="loading-text">
+            Starting your AI assistant...
+        </div>
+
+    </div>
+
+
+
+    <!-- =========================================================
          AUTH PAGE
-    ========================================================== -->
+    ========================================================= -->
 
-    <div
-        class="app"
-        id="authPage"
-    >
+    <section id="authPage">
 
-        <div class="auth-container">
+        <div class="auth-card">
 
             <img
                 src="./images/sorous-face.png"
-                class="sorous-face"
+                class="auth-face"
                 alt="Sorous AI"
             >
 
 
-            <h1 id="authTitle">
+            <h1
+                class="auth-title"
+                id="authTitle"
+            >
                 Welcome to Sorous
             </h1>
 
 
-            <div
-                class="subtitle"
+            <p
+                class="auth-subtitle"
                 id="authSubtitle"
             >
                 Login to continue your journey with Sorous AI
-            </div>
-
-
-            <div
-                id="authStatus"
-                class="status-message"
-            >
-            </div>
+            </p>
 
 
             <!-- NAME -->
@@ -758,16 +1078,16 @@
             <div
                 class="form-group"
                 id="nameGroup"
-                style="display: none;"
             >
 
                 <label for="name">
-                    Name
+                    Your Name
                 </label>
 
                 <input
                     type="text"
                     id="name"
+                    class="form-input"
                     placeholder="Enter your name"
                     autocomplete="name"
                 >
@@ -786,6 +1106,7 @@
                 <input
                     type="email"
                     id="email"
+                    class="form-input"
                     placeholder="Enter your email"
                     autocomplete="email"
                 >
@@ -804,6 +1125,7 @@
                 <input
                     type="password"
                     id="password"
+                    class="form-input"
                     placeholder="Enter your password"
                     autocomplete="current-password"
                 >
@@ -812,285 +1134,319 @@
 
 
             <button
-                class="auth-btn"
                 id="authButton"
-                type="button"
+                class="auth-button"
+                onclick="handleAuth()"
             >
                 Login
             </button>
 
 
             <div
-                class="switch-text"
-                id="switchText"
-            >
-                Don't have an account?
-                <span id="switchMode">
-                    Create Account
+                id="authError"
+                class="auth-error"
+            ></div>
+
+
+            <div class="switch-area">
+
+                <span id="switchText">
+                    Don't have an account?
                 </span>
+
+                <button
+                    class="switch-button"
+                    id="switchButton"
+                    onclick="toggleAuthMode()"
+                >
+                    Create Account
+                </button>
+
             </div>
 
         </div>
 
-    </div>
+    </section>
 
 
-    <!-- ==========================================================
+
+    <!-- =========================================================
          CHAT PAGE
-    ========================================================== -->
+    ========================================================= -->
 
-    <div
-        class="chat-page"
-        id="chatPage"
-    >
+    <section id="chatPage">
 
-        <!-- HEADER -->
+        <div class="chat-container">
 
-        <header class="chat-header">
 
-            <div class="chat-brand">
+            <!-- HEADER -->
 
-                <img
-                    src="./images/sorous-face.png"
-                    class="chat-face"
-                    alt="Sorous AI"
-                >
+            <header class="chat-header">
 
-                <div>
+                <div class="chat-brand">
 
-                    <h2>
-                        Sorous AI
-                    </h2>
+                    <img
+                        src="./images/sorous-face.png"
+                        class="chat-face"
+                        alt="Sorous"
+                    >
 
-                    <small>
-                        Your AI companion
-                    </small>
+                    <div>
 
+                        <div class="brand-name">
+                            Sorous AI
+                        </div>
+
+                        <div class="brand-status">
+
+                            <span class="status-dot"></span>
+
+                            Online
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="header-actions">
+
+                    <span
+                        id="userName"
+                        class="user-name"
+                    >
+                        User
+                    </span>
+
+                    <button
+                        class="logout-button"
+                        onclick="logout()"
+                    >
+                        Logout
+                    </button>
+
+                </div>
+
+            </header>
+
+
+
+            <!-- MESSAGES -->
+
+            <main
+                id="messages"
+                class="messages"
+            ></main>
+
+
+
+            <!-- INPUT -->
+
+            <div class="chat-input-area">
+
+                <div class="input-wrapper">
+
+                    <textarea
+                        id="chatInput"
+                        rows="1"
+                        placeholder="Message Sorous..."
+                        maxlength="5000"
+                    ></textarea>
+
+
+                    <button
+                        id="sendButton"
+                        class="send-button"
+                        onclick="sendMessage()"
+                        aria-label="Send message"
+                    >
+                        ➤
+                    </button>
+
+                </div>
+
+
+                <div class="input-hint">
+                    Enter to send • Shift + Enter for new line
                 </div>
 
             </div>
 
-
-            <button
-                class="logout-btn"
-                id="logoutButton"
-                type="button"
-            >
-                Logout
-            </button>
-
-        </header>
-
-
-        <!-- MESSAGES -->
-
-        <main
-            class="messages"
-            id="messages"
-        >
-        </main>
-
-
-        <!-- INPUT -->
-
-        <div class="chat-input-area">
-
-            <input
-                type="text"
-                id="chatInput"
-                class="chat-input"
-                placeholder="Message Sorous..."
-                autocomplete="off"
-            >
-
-
-            <button
-                class="send-btn"
-                id="sendButton"
-                type="button"
-            >
-                Send
-            </button>
-
         </div>
 
-    </div>
+    </section>
 
 
-    <!-- ==========================================================
+
+    <!-- =========================================================
          JAVASCRIPT
-    ========================================================== -->
+    ========================================================= -->
 
     <script>
 
-        /* ==========================================================
-           API CONFIGURATION
-        ========================================================== */
 
-        const API_URL =
+        /* =========================================================
+           API CONFIG
+        ========================================================= */
+
+        const LOCAL_API =
             "http://127.0.0.1:8000";
 
+        const PRODUCTION_API =
+            "https://sorous-ai.onrender.com";
 
-        /* ==========================================================
+
+        /*
+            Localhost par local backend use hoga.
+            Netlify/live website par Render backend use hoga.
+        */
+
+        const API_BASE =
+            (
+                window.location.hostname === "localhost" ||
+                window.location.hostname === "127.0.0.1"
+            )
+                ? LOCAL_API
+                : PRODUCTION_API;
+
+
+        /* =========================================================
            STATE
-        ========================================================== */
+        ========================================================= */
 
-        let isRegisterMode = false;
+        let authMode = "login";
 
-        let isSendingMessage = false;
+        let authToken =
+            localStorage.getItem("sorous_token");
+
+        let currentUser = null;
 
 
-        /* ==========================================================
-           ELEMENTS
-        ========================================================== */
+        /* =========================================================
+           DOM
+        ========================================================= */
+
+        const loadingScreen =
+            document.getElementById("loadingScreen");
 
         const authPage =
-            document.getElementById(
-                "authPage"
-            );
+            document.getElementById("authPage");
 
         const chatPage =
-            document.getElementById(
-                "chatPage"
-            );
+            document.getElementById("chatPage");
 
-        const authButton =
-            document.getElementById(
-                "authButton"
-            );
-
-        const authStatus =
-            document.getElementById(
-                "authStatus"
-            );
+        const messagesBox =
+            document.getElementById("messages");
 
         const chatInput =
-            document.getElementById(
-                "chatInput"
-            );
+            document.getElementById("chatInput");
 
         const sendButton =
-            document.getElementById(
-                "sendButton"
-            );
-
-        const messages =
-            document.getElementById(
-                "messages"
-            );
+            document.getElementById("sendButton");
 
 
-        /* ==========================================================
-           SAFE RESPONSE PARSER
-        ========================================================== */
+        /* =========================================================
+           SAFE JSON
+        ========================================================= */
 
-        async function getResponseData(response) {
+        async function readResponse(response) {
 
-            try {
+            const text =
+                await response.text();
 
-                return await response.json();
-
-            } catch (error) {
-
+            if (!text) {
                 return {};
             }
+
+            try {
+                return JSON.parse(text);
+            }
+
+            catch {
+                return {
+                    detail: text
+                };
+            }
+
         }
 
 
-        /* ==========================================================
-           SHOW AUTH STATUS
-        ========================================================== */
-
-        function showAuthStatus(
-            message,
-            type = "error"
-        ) {
-
-            authStatus.textContent =
-                message;
-
-            authStatus.className =
-                "status-message " + type;
-        }
-
-
-        /* ==========================================================
-           CLEAR AUTH STATUS
-        ========================================================== */
-
-        function clearAuthStatus() {
-
-            authStatus.textContent =
-                "";
-
-            authStatus.className =
-                "status-message";
-        }
-
-
-        /* ==========================================================
-           TOKEN
-        ========================================================== */
-
-        function getToken() {
-
-            return localStorage.getItem(
-                "sorous_token"
-            );
-        }
-
-
-        function clearSession() {
-
-            localStorage.removeItem(
-                "sorous_token"
-            );
-
-            localStorage.removeItem(
-                "sorous_user"
-            );
-        }
-
-
-        /* ==========================================================
+        /* =========================================================
            PAGE LOAD
-        ========================================================== */
+        ========================================================= */
 
         window.addEventListener(
             "load",
             async function () {
 
-                const token =
-                    getToken();
+                setTimeout(
+                    async function () {
+
+                        loadingScreen.style.display =
+                            "none";
 
 
-                if (!token) {
-                    return;
-                }
+                        if (authToken) {
 
+                            const valid =
+                                await validateSession();
 
-                await openChat();
+                            if (valid) {
+
+                                openChat();
+
+                            }
+
+                            else {
+
+                                clearSession();
+
+                                showAuth();
+
+                            }
+
+                        }
+
+                        else {
+
+                            showAuth();
+
+                        }
+
+                    },
+                    700
+                );
+
             }
         );
 
 
-        /* ==========================================================
-           SWITCH LOGIN / REGISTER
-        ========================================================== */
+        /* =========================================================
+           SHOW AUTH
+        ========================================================= */
 
-        document
-            .getElementById("switchMode")
-            .addEventListener(
-                "click",
-                toggleAuthMode
-            );
+        function showAuth() {
 
+            authPage.style.display =
+                "flex";
+
+            chatPage.style.display =
+                "none";
+
+        }
+
+
+        /* =========================================================
+           TOGGLE LOGIN / REGISTER
+        ========================================================= */
 
         function toggleAuthMode() {
 
-            isRegisterMode =
-                !isRegisterMode;
-
+            const nameGroup =
+                document.getElementById(
+                    "nameGroup"
+                );
 
             const title =
                 document.getElementById(
@@ -1102,9 +1458,9 @@
                     "authSubtitle"
                 );
 
-            const nameGroup =
+            const button =
                 document.getElementById(
-                    "nameGroup"
+                    "authButton"
                 );
 
             const switchText =
@@ -1112,191 +1468,218 @@
                     "switchText"
                 );
 
+            const switchButton =
+                document.getElementById(
+                    "switchButton"
+                );
 
-            clearAuthStatus();
+            const error =
+                document.getElementById(
+                    "authError"
+                );
 
 
-            if (isRegisterMode) {
+            error.textContent = "";
 
-                title.textContent =
-                    "Create your Sorous account";
 
-                subtitle.textContent =
-                    "Your chats and memories will stay connected to your account";
+            if (authMode === "login") {
+
+                authMode = "register";
+
 
                 nameGroup.style.display =
                     "block";
 
-                authButton.textContent =
-                    "Create Account";
-
-                switchText.innerHTML =
-                    `Already have an account?
-                    <span id="switchMode">
-                        Login
-                    </span>`;
-
-
-                document
-                    .getElementById("switchMode")
-                    .addEventListener(
-                        "click",
-                        toggleAuthMode
-                    );
-
-            } else {
 
                 title.textContent =
-                    "Welcome to Sorous";
+                    "Create Your Account";
+
 
                 subtitle.textContent =
-                    "Login to continue your journey with Sorous AI";
+                    "Create your Sorous AI account and save your chats";
+
+
+                button.textContent =
+                    "Create Account";
+
+
+                switchText.textContent =
+                    "Already have an account?";
+
+
+                switchButton.textContent =
+                    "Login";
+
+            }
+
+            else {
+
+                authMode = "login";
+
 
                 nameGroup.style.display =
                     "none";
 
-                authButton.textContent =
+
+                title.textContent =
+                    "Welcome to Sorous";
+
+
+                subtitle.textContent =
+                    "Login to continue your journey with Sorous AI";
+
+
+                button.textContent =
                     "Login";
 
-                switchText.innerHTML =
-                    `Don't have an account?
-                    <span id="switchMode">
-                        Create Account
-                    </span>`;
+
+                switchText.textContent =
+                    "Don't have an account?";
 
 
-                document
-                    .getElementById("switchMode")
-                    .addEventListener(
-                        "click",
-                        toggleAuthMode
-                    );
+                switchButton.textContent =
+                    "Create Account";
+
             }
+
         }
 
 
-        /* ==========================================================
-           REGISTER / LOGIN
-        ========================================================== */
-
-        authButton.addEventListener(
-            "click",
-            handleAuth
-        );
-
+        /* =========================================================
+           LOGIN / REGISTER
+        ========================================================= */
 
         async function handleAuth() {
 
-            clearAuthStatus();
-
-
-            const email =
-                document
-                    .getElementById("email")
-                    .value
-                    .trim();
-
-            const password =
-                document
-                    .getElementById("password")
-                    .value;
-
-
-            if (!email || !password) {
-
-                showAuthStatus(
-                    "Please enter your email and password."
+            const nameInput =
+                document.getElementById(
+                    "name"
                 );
 
+            const emailInput =
+                document.getElementById(
+                    "email"
+                );
+
+            const passwordInput =
+                document.getElementById(
+                    "password"
+                );
+
+            const button =
+                document.getElementById(
+                    "authButton"
+                );
+
+            const errorBox =
+                document.getElementById(
+                    "authError"
+                );
+
+
+            const name =
+                nameInput.value.trim();
+
+            const email =
+                emailInput.value.trim();
+
+            const password =
+                passwordInput.value;
+
+
+            errorBox.textContent = "";
+
+
+            /* VALIDATION */
+
+            if (!email) {
+
+                errorBox.textContent =
+                    "Email enter karo.";
+
                 return;
+
             }
 
 
-            let endpoint =
-                "";
+            if (!password) {
 
-            let payload =
-                {};
+                errorBox.textContent =
+                    "Password enter karo.";
 
+                return;
 
-            if (isRegisterMode) {
-
-                const name =
-                    document
-                        .getElementById("name")
-                        .value
-                        .trim();
-
-
-                if (!name) {
-
-                    showAuthStatus(
-                        "Please enter your name."
-                    );
-
-                    return;
-                }
-
-
-                endpoint =
-                    "/api/register";
-
-
-                payload = {
-
-                    name:
-                        name,
-
-                    email:
-                        email,
-
-                    password:
-                        password
-                };
-
-            } else {
-
-                endpoint =
-                    "/api/login";
-
-
-                payload = {
-
-                    email:
-                        email,
-
-                    password:
-                        password
-                };
             }
 
 
-            const originalText =
-                authButton.textContent;
+            if (
+                authMode === "register" &&
+                !name
+            ) {
+
+                errorBox.textContent =
+                    "Name enter karo.";
+
+                return;
+
+            }
 
 
-            authButton.disabled =
+            if (
+                authMode === "register" &&
+                password.length < 6
+            ) {
+
+                errorBox.textContent =
+                    "Password minimum 6 characters ka hona chahiye.";
+
+                return;
+
+            }
+
+
+            const endpoint =
+                authMode === "login"
+                    ? "/api/login"
+                    : "/api/register";
+
+
+            const payload =
+                authMode === "login"
+                    ? {
+                        email: email,
+                        password: password
+                    }
+                    : {
+                        name: name,
+                        email: email,
+                        password: password
+                    };
+
+
+            const oldText =
+                button.textContent;
+
+
+            button.disabled =
                 true;
 
 
-            authButton.textContent =
-                isRegisterMode
-                    ? "Creating account..."
-                    : "Logging in...";
+            button.textContent =
+                authMode === "login"
+                    ? "Logging in..."
+                    : "Creating account...";
 
 
             try {
 
                 const response =
                     await fetch(
-                        API_URL + endpoint,
+                        API_BASE + endpoint,
                         {
-
-                            method:
-                                "POST",
+                            method: "POST",
 
                             headers: {
-
                                 "Content-Type":
                                     "application/json"
                             },
@@ -1310,148 +1693,139 @@
 
 
                 const data =
-                    await getResponseData(
+                    await readResponse(
                         response
                     );
 
 
                 if (!response.ok) {
 
-                    showAuthStatus(
+                    throw new Error(
                         data.detail ||
-                        "Something went wrong. Please try again."
+                        "Authentication failed"
                     );
 
-                    return;
                 }
 
 
-                if (
-                    !data.token ||
-                    !data.user
-                ) {
+                if (!data.token) {
 
-                    showAuthStatus(
-                        "Login failed. Invalid server response."
+                    throw new Error(
+                        "Backend ne login token return nahi kiya."
                     );
 
-                    return;
                 }
+
+
+                authToken =
+                    data.token;
+
+
+                currentUser =
+                    data.user || null;
 
 
                 localStorage.setItem(
                     "sorous_token",
-                    data.token
+                    authToken
                 );
 
 
                 localStorage.setItem(
                     "sorous_user",
                     JSON.stringify(
-                        data.user
+                        currentUser
                     )
                 );
 
 
-                await openChat();
+                nameInput.value = "";
+                emailInput.value = "";
+                passwordInput.value = "";
 
-            } catch (error) {
+
+                openChat();
+
+            }
+
+            catch (error) {
 
                 console.error(
-                    "Auth error:",
+                    "Authentication error:",
                     error
                 );
 
 
-                showAuthStatus(
-                    "Backend server connection failed. Make sure FastAPI is running on port 8000."
-                );
+                errorBox.textContent =
+                    getFriendlyError(
+                        error
+                    );
 
-            } finally {
+            }
 
-                authButton.disabled =
+            finally {
+
+                button.disabled =
                     false;
 
+                button.textContent =
+                    oldText;
 
-                authButton.textContent =
-                    originalText;
             }
+
         }
 
 
-        /* ==========================================================
-           OPEN CHAT
-        ========================================================== */
+        /* =========================================================
+           SESSION VALIDATION
+        ========================================================= */
 
-        async function openChat() {
-
-            authPage.style.display =
-                "none";
-
-            chatPage.style.display =
-                "flex";
-
-
-            messages.innerHTML =
-                "";
-
-
-            const historyLoaded =
-                await loadHistory();
-
-
-            /*
-             * If token is invalid,
-             * loadHistory() will automatically
-             * return the user to login page.
-             */
-
-            if (!historyLoaded) {
-                return;
-            }
-
-
-            /*
-             * Welcome message only when
-             * user has no saved messages.
-             */
-
-            if (
-                messages.children.length === 0
-            ) {
-
-                const user =
-                    getStoredUser();
-
-
-                if (user) {
-
-                    addMessage(
-                        "Sorous",
-                        `Hello ${user.name}! 👋 Welcome to Sorous AI. How can I help you today?`
-                    );
-                }
-            }
-
-
-            setTimeout(
-                function () {
-
-                    chatInput.focus();
-
-                },
-                100
-            );
-        }
-
-
-        /* ==========================================================
-           GET STORED USER
-        ========================================================== */
-
-        function getStoredUser() {
+        async function validateSession() {
 
             try {
+
+                const response =
+                    await fetch(
+                        API_BASE + "/api/history",
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body:
+                                JSON.stringify({
+                                    token:
+                                        authToken
+                                })
+                        }
+                    );
+
+
+                if (
+                    response.status === 401 ||
+                    response.status === 403
+                ) {
+
+                    return false;
+
+                }
+
+
+                if (!response.ok) {
+
+                    /*
+                        Temporary server problem par
+                        existing login ko immediately
+                        destroy nahi karenge.
+                    */
+
+                    return true;
+
+                }
+
 
                 const userData =
                     localStorage.getItem(
@@ -1459,45 +1833,118 @@
                     );
 
 
-                if (!userData) {
-                    return null;
+                if (userData) {
+
+                    try {
+
+                        currentUser =
+                            JSON.parse(
+                                userData
+                            );
+
+                    }
+
+                    catch {
+
+                        currentUser =
+                            null;
+
+                    }
+
                 }
 
 
-                return JSON.parse(
-                    userData
-                );
+                return true;
 
-            } catch (error) {
+            }
+
+            catch (error) {
 
                 console.error(
-                    "User data error:",
+                    "Session validation error:",
                     error
                 );
 
+                return true;
 
-                return null;
             }
+
         }
 
 
-        /* ==========================================================
-           LOAD HISTORY
-        ========================================================== */
+        /* =========================================================
+           OPEN CHAT
+        ========================================================= */
+
+        async function openChat() {
+
+            authPage.style.display =
+                "none";
+
+
+            chatPage.style.display =
+                "flex";
+
+
+            updateUserName();
+
+
+            await loadHistory();
+
+
+            chatInput.focus();
+
+        }
+
+
+        /* =========================================================
+           UPDATE USER NAME
+        ========================================================= */
+
+        function updateUserName() {
+
+            const userName =
+                document.getElementById(
+                    "userName"
+                );
+
+
+            if (
+                currentUser &&
+                currentUser.name
+            ) {
+
+                userName.textContent =
+                    currentUser.name;
+
+            }
+
+            else {
+
+                userName.textContent =
+                    "User";
+
+            }
+
+        }
+
+
+        /* =========================================================
+           LOAD CHAT HISTORY
+        ========================================================= */
 
         async function loadHistory() {
 
-            const token =
-                getToken();
+            messagesBox.innerHTML =
+                "";
 
 
-            if (!token) {
+            if (!authToken) {
 
-                forceLogin(
-                    "Your session has expired. Please login again."
-                );
+                showWelcomeMessage();
 
-                return false;
+                return;
+
             }
 
 
@@ -1505,105 +1952,81 @@
 
                 const response =
                     await fetch(
-                        API_URL + "/api/history",
+                        API_BASE + "/api/history",
                         {
-
-                            method:
-                                "POST",
+                            method: "POST",
 
                             headers: {
-
                                 "Content-Type":
                                     "application/json"
                             },
 
                             body:
                                 JSON.stringify({
-
                                     token:
-                                        token
+                                        authToken
                                 })
                         }
                     );
 
 
                 const data =
-                    await getResponseData(
+                    await readResponse(
                         response
                     );
 
 
-                /*
-                 * IMPORTANT:
-                 * Backend restart clears active_tokens
-                 * because tokens are currently stored in memory.
-                 *
-                 * This automatically removes the old token.
-                 */
-
                 if (
-                    response.status === 401
+                    response.status === 401 ||
+                    response.status === 403
                 ) {
 
-                    forceLogin(
-                        "Your previous session expired. Please login again."
-                    );
+                    clearSession();
 
-                    return false;
+                    showAuth();
+
+                    return;
+
                 }
 
 
                 if (!response.ok) {
 
-                    addSystemMessage(
+                    throw new Error(
                         data.detail ||
-                        "Could not load chat history."
+                        "History load failed"
                     );
 
-                    return true;
                 }
 
 
                 if (
-                    !Array.isArray(
-                        data.messages
-                    )
+                    data.messages &&
+                    data.messages.length > 0
                 ) {
 
-                    return true;
+                    data.messages.forEach(
+                        function (message) {
+
+                            addMessage(
+                                message.content,
+                                message.role
+                            );
+
+                        }
+                    );
+
                 }
 
+                else {
 
-                data.messages.forEach(
-                    function (message) {
+                    showWelcomeMessage();
 
-                        if (
-                            message.role ===
-                            "user"
-                        ) {
+                }
 
-                            addMessage(
-                                "You",
-                                message.content
-                            );
+            }
 
-                        } else {
-
-                            addMessage(
-                                "Sorous",
-                                message.content
-                            );
-                        }
-                    }
-                );
-
-
-                scrollMessagesToBottom();
-
-
-                return true;
-
-            } catch (error) {
+            catch (error) {
 
                 console.error(
                     "History error:",
@@ -1611,39 +2034,348 @@
                 );
 
 
-                addSystemMessage(
-                    "Backend server is not available. Make sure FastAPI is running on port 8000."
-                );
+                showWelcomeMessage();
 
-
-                return true;
             }
+
         }
 
 
-        /* ==========================================================
-           SEND MESSAGE
-        ========================================================== */
+        /* =========================================================
+           WELCOME
+        ========================================================= */
 
-        sendButton.addEventListener(
-            "click",
-            sendMessage
-        );
+        function showWelcomeMessage() {
+
+            const name =
+                currentUser &&
+                currentUser.name
+                    ? currentUser.name
+                    : "there";
 
 
-        async function sendMessage() {
+            addMessage(
+                `Hello ${name}! 👋\n\n` +
+                "Main Sorous AI hoon. 🤖\n" +
+                "Aaj main tumhari kis tarah help kar sakta hoon?",
+                "assistant"
+            );
 
-            if (isSendingMessage) {
-                return;
+        }
+
+
+        /* =========================================================
+           ADD MESSAGE
+        ========================================================= */
+
+        function addMessage(
+            content,
+            role
+        ) {
+
+            const row =
+                document.createElement(
+                    "div"
+                );
+
+
+            row.className =
+                "message-row " +
+                (
+                    role === "user"
+                        ? "user"
+                        : "assistant"
+                );
+
+
+            const inner =
+                document.createElement(
+                    "div"
+                );
+
+
+            inner.className =
+                "message-inner";
+
+
+            /* AVATAR */
+
+            if (role === "user") {
+
+                const avatar =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                avatar.className =
+                    "message-avatar user-avatar";
+
+
+                const name =
+                    currentUser &&
+                    currentUser.name
+                        ? currentUser.name
+                        : "U";
+
+
+                avatar.textContent =
+                    name
+                        .charAt(0)
+                        .toUpperCase();
+
+
+                inner.appendChild(
+                    avatar
+                );
+
+            }
+
+            else {
+
+                const avatar =
+                    document.createElement(
+                        "img"
+                    );
+
+
+                avatar.className =
+                    "message-avatar";
+
+
+                avatar.src =
+                    "./images/sorous-face.png";
+
+
+                avatar.alt =
+                    "Sorous";
+
+
+                inner.appendChild(
+                    avatar
+                );
+
             }
 
 
+            /* CONTENT */
+
+            const contentWrapper =
+                document.createElement(
+                    "div"
+                );
+
+
+            const bubble =
+                document.createElement(
+                    "div"
+                );
+
+
+            bubble.className =
+                "message-bubble";
+
+
+            bubble.textContent =
+                content || "";
+
+
+            const time =
+                document.createElement(
+                    "div"
+                );
+
+
+            time.className =
+                "message-time";
+
+
+            time.textContent =
+                getTime();
+
+
+            contentWrapper.appendChild(
+                bubble
+            );
+
+
+            contentWrapper.appendChild(
+                time
+            );
+
+
+            inner.appendChild(
+                contentWrapper
+            );
+
+
+            row.appendChild(
+                inner
+            );
+
+
+            messagesBox.appendChild(
+                row
+            );
+
+
+            scrollToBottom();
+
+        }
+
+
+        /* =========================================================
+           TIME
+        ========================================================= */
+
+        function getTime() {
+
+            return new Date()
+                .toLocaleTimeString(
+                    [],
+                    {
+                        hour: "2-digit",
+                        minute: "2-digit"
+                    }
+                );
+
+        }
+
+
+        /* =========================================================
+           TYPING MESSAGE
+        ========================================================= */
+
+        function showTyping() {
+
+            removeTyping();
+
+
+            const row =
+                document.createElement(
+                    "div"
+                );
+
+
+            row.className =
+                "message-row assistant";
+
+
+            row.id =
+                "typingMessage";
+
+
+            const inner =
+                document.createElement(
+                    "div"
+                );
+
+
+            inner.className =
+                "message-inner";
+
+
+            const avatar =
+                document.createElement(
+                    "img"
+                );
+
+
+            avatar.className =
+                "message-avatar";
+
+
+            avatar.src =
+                "./images/sorous-face.png";
+
+
+            avatar.alt =
+                "Sorous";
+
+
+            const content =
+                document.createElement(
+                    "div"
+                );
+
+
+            const bubble =
+                document.createElement(
+                    "div"
+                );
+
+
+            bubble.className =
+                "message-bubble typing-bubble";
+
+
+            bubble.innerHTML =
+                `
+                    <span class="typing-dot"></span>
+                    <span class="typing-dot"></span>
+                    <span class="typing-dot"></span>
+                `;
+
+
+            content.appendChild(
+                bubble
+            );
+
+
+            inner.appendChild(
+                avatar
+            );
+
+
+            inner.appendChild(
+                content
+            );
+
+
+            row.appendChild(
+                inner
+            );
+
+
+            messagesBox.appendChild(
+                row
+            );
+
+
+            scrollToBottom();
+
+        }
+
+
+        /* =========================================================
+           REMOVE TYPING
+        ========================================================= */
+
+        function removeTyping() {
+
+            const typing =
+                document.getElementById(
+                    "typingMessage"
+                );
+
+
+            if (typing) {
+
+                typing.remove();
+
+            }
+
+        }
+
+
+        /* =========================================================
+           SEND MESSAGE
+        ========================================================= */
+
+        async function sendMessage() {
+
             const message =
                 chatInput.value.trim();
-
-
-            const token =
-                getToken();
 
 
             if (!message) {
@@ -1651,122 +2383,101 @@
             }
 
 
-            if (!token) {
+            if (!authToken) {
 
-                forceLogin(
-                    "Your session has expired. Please login again."
-                );
+                showAuth();
 
                 return;
+
             }
 
 
-            isSendingMessage =
-                true;
-
-
             addMessage(
-                "You",
-                message
+                message,
+                "user"
             );
 
 
-            chatInput.value =
-                "";
+            chatInput.value = "";
 
 
-            chatInput.disabled =
-                true;
+            autoResize();
 
 
             sendButton.disabled =
                 true;
 
 
-            sendButton.textContent =
-                "Sending...";
+            showTyping();
 
 
             try {
 
                 const response =
                     await fetch(
-                        API_URL + "/api/chat",
+                        API_BASE + "/api/chat",
                         {
-
-                            method:
-                                "POST",
+                            method: "POST",
 
                             headers: {
-
                                 "Content-Type":
                                     "application/json"
                             },
 
                             body:
                                 JSON.stringify({
-
                                     message:
                                         message,
 
                                     token:
-                                        token
+                                        authToken
                                 })
                         }
                     );
 
 
                 const data =
-                    await getResponseData(
+                    await readResponse(
                         response
                     );
 
 
-                /*
-                 * Invalid token
-                 */
+                removeTyping();
+
 
                 if (
-                    response.status === 401
+                    response.status === 401 ||
+                    response.status === 403
                 ) {
 
-                    forceLogin(
-                        "Your session expired. Please login again."
-                    );
+                    clearSession();
+
+                    showAuth();
 
                     return;
+
                 }
 
 
                 if (!response.ok) {
 
-                    addMessage(
-                        "Sorous",
+                    throw new Error(
                         data.detail ||
-                        "Sorry, something went wrong."
+                        "AI server error"
                     );
 
-                    return;
-                }
-
-
-                if (!data.response) {
-
-                    addMessage(
-                        "Sorous",
-                        "Sorry, I could not generate a response."
-                    );
-
-                    return;
                 }
 
 
                 addMessage(
-                    "Sorous",
-                    data.response
+                    data.response ||
+                    "Sorous ne koi response nahi diya.",
+                    "assistant"
                 );
 
-            } catch (error) {
+            }
+
+            catch (error) {
 
                 console.error(
                     "Chat error:",
@@ -1774,126 +2485,34 @@
                 );
 
 
+                removeTyping();
+
+
                 addMessage(
-                    "Sorous",
-                    "I cannot connect to the backend server right now."
+                    getFriendlyError(
+                        error
+                    ),
+                    "assistant"
                 );
 
-            } finally {
+            }
 
-                isSendingMessage =
-                    false;
-
-
-                chatInput.disabled =
-                    false;
-
+            finally {
 
                 sendButton.disabled =
                     false;
 
 
-                sendButton.textContent =
-                    "Send";
-
-
                 chatInput.focus();
-            }
-        }
 
-
-        /* ==========================================================
-           ADD MESSAGE
-        ========================================================== */
-
-        function addMessage(
-            sender,
-            text
-        ) {
-
-            const messageDiv =
-                document.createElement(
-                    "div"
-                );
-
-
-            if (
-                sender === "You"
-            ) {
-
-                messageDiv.className =
-                    "message user-message";
-
-            } else {
-
-                messageDiv.className =
-                    "message ai-message";
             }
 
-
-            /*
-             * Security:
-             * textContent prevents HTML injection.
-             */
-
-            messageDiv.textContent =
-                text;
-
-
-            messages.appendChild(
-                messageDiv
-            );
-
-
-            scrollMessagesToBottom();
         }
 
 
-        /* ==========================================================
-           SYSTEM MESSAGE
-        ========================================================== */
-
-        function addSystemMessage(
-            text
-        ) {
-
-            const messageDiv =
-                document.createElement(
-                    "div"
-                );
-
-
-            messageDiv.className =
-                "message system-message";
-
-
-            messageDiv.textContent =
-                text;
-
-
-            messages.appendChild(
-                messageDiv
-            );
-
-
-            scrollMessagesToBottom();
-        }
-
-
-        /* ==========================================================
-           SCROLL
-        ========================================================== */
-
-        function scrollMessagesToBottom() {
-
-            messages.scrollTop =
-                messages.scrollHeight;
-        }
-
-
-        /* ==========================================================
-           ENTER KEY
-        ========================================================== */
+        /* =========================================================
+           ENTER TO SEND
+        ========================================================= */
 
         chatInput.addEventListener(
             "keydown",
@@ -1907,171 +2526,192 @@
                     event.preventDefault();
 
                     sendMessage();
+
                 }
+
             }
         );
 
 
-        /* ==========================================================
-           AUTH ENTER KEY
-        ========================================================== */
+        /* =========================================================
+           AUTO RESIZE TEXTAREA
+        ========================================================= */
 
-        document
-            .getElementById("email")
-            .addEventListener(
-                "keydown",
-                function (event) {
+        chatInput.addEventListener(
+            "input",
+            autoResize
+        );
 
-                    if (
-                        event.key === "Enter"
-                    ) {
 
-                        handleAuth();
-                    }
-                }
+        function autoResize() {
+
+            chatInput.style.height =
+                "auto";
+
+
+            chatInput.style.height =
+                Math.min(
+                    chatInput.scrollHeight,
+                    140
+                ) + "px";
+
+        }
+
+
+        /* =========================================================
+           SCROLL
+        ========================================================= */
+
+        function scrollToBottom() {
+
+            setTimeout(
+                function () {
+
+                    messagesBox.scrollTop =
+                        messagesBox.scrollHeight;
+
+                },
+                20
             );
 
-
-        document
-            .getElementById("password")
-            .addEventListener(
-                "keydown",
-                function (event) {
-
-                    if (
-                        event.key === "Enter"
-                    ) {
-
-                        handleAuth();
-                    }
-                }
-            );
+        }
 
 
-        /* ==========================================================
-           LOGOUT BUTTON
-        ========================================================== */
-
-        document
-            .getElementById("logoutButton")
-            .addEventListener(
-                "click",
-                logout
-            );
-
-
-        /* ==========================================================
+        /* =========================================================
            LOGOUT
-        ========================================================== */
+        ========================================================= */
 
         async function logout() {
 
             const token =
-                getToken();
+                authToken;
 
 
-            try {
+            /*
+                Backend logout endpoint token
+                body mein expect karta hai.
+            */
 
-                if (token) {
+            if (token) {
+
+                try {
 
                     await fetch(
-                        API_URL + "/api/logout",
+                        API_BASE + "/api/logout",
                         {
-
-                            method:
-                                "POST",
+                            method: "POST",
 
                             headers: {
-
                                 "Content-Type":
                                     "application/json"
                             },
 
                             body:
                                 JSON.stringify({
-
                                     token:
                                         token
                                 })
                         }
                     );
+
                 }
 
-            } catch (error) {
+                catch (error) {
 
-                console.error(
-                    "Logout API error:",
-                    error
-                );
+                    console.log(
+                        "Logout request error:",
+                        error
+                    );
+
+                }
+
             }
 
-
-            forceLogin(
-                ""
-            );
-        }
-
-
-        /* ==========================================================
-           FORCE LOGIN
-        ========================================================== */
-
-        function forceLogin(
-            message
-        ) {
 
             clearSession();
 
 
-            chatPage.style.display =
-                "none";
-
-
-            authPage.style.display =
-                "flex";
-
-
-            messages.innerHTML =
+            messagesBox.innerHTML =
                 "";
 
 
-            chatInput.value =
-                "";
+            showAuth();
 
 
-            chatInput.disabled =
-                false;
+            document.getElementById(
+                "password"
+            ).value = "";
+
+        }
 
 
-            sendButton.disabled =
-                false;
+        /* =========================================================
+           CLEAR SESSION
+        ========================================================= */
+
+        function clearSession() {
+
+            authToken =
+                null;
 
 
-            sendButton.textContent =
-                "Send";
+            currentUser =
+                null;
 
 
-            document
-                .getElementById("password")
-                .value =
-                "";
+            localStorage.removeItem(
+                "sorous_token"
+            );
 
 
-            if (message) {
+            localStorage.removeItem(
+                "sorous_user"
+            );
 
-                showAuthStatus(
-                    message
+        }
+
+
+        /* =========================================================
+           FRIENDLY ERRORS
+        ========================================================= */
+
+        function getFriendlyError(
+            error
+        ) {
+
+            const message =
+                error &&
+                error.message
+                    ? error.message
+                    : "";
+
+
+            if (
+                message.includes(
+                    "Failed to fetch"
+                )
+            ) {
+
+                return (
+                    "Sorous server se connection nahi ho pa raha. " +
+                    "Backend/CORS check karo."
                 );
 
-            } else {
-
-                clearAuthStatus();
             }
+
+
+            return (
+                "Sorous AI error: " +
+                (
+                    message ||
+                    "Something went wrong."
+                )
+            );
+
         }
+
 
     </script>
 
 </body>
-
 </html>
-
