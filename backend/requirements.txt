@@ -4,3 +4,4 @@ sqlalchemy
 requests
 beautifulsoup4
 pydantic
+ddgs
