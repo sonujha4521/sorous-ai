@@ -4,6 +4,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
 
+import os
 import requests
 import re
 from urllib.parse import quote
@@ -49,7 +50,7 @@ app.add_middleware(
         "http://localhost:5500",
         "http://127.0.0.1:8000",
         "http://localhost:8000",
-          "https://sorousai.netlify.app",
+        "https://sorousai.netlify.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -58,12 +59,17 @@ app.add_middleware(
 
 
 # ============================================================
-# OLLAMA SETTINGS
+# GEMINI SETTINGS
 # ============================================================
 
-OLLAMA_URL = "http://127.0.0.1:11434/api/chat"
-
-OLLAMA_MODEL = "qwen2.5:7b"
+# Keep the API key in Render Environment Variables.
+# Never paste the real key into this file or GitHub.
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "").strip()
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.7-flash").strip()
+GEMINI_URL = (
+    "https://generativelanguage.googleapis.com/"
+    f"v1beta/models/{GEMINI_MODEL}:generateContent"
+)
 
 MAX_HISTORY_MESSAGES = 16
 
@@ -71,7 +77,7 @@ MAX_MEMORY_ITEMS = 20
 
 SOROUS_FOOTER = "Thank you for taking help of Sorous 😊"
 
-OLLAMA_TIMEOUT = 90
+GEMINI_TIMEOUT = 120
 
 WEB_SEARCH_TIMEOUT = 8
 
@@ -198,7 +204,7 @@ def home():
     return {
         "message": "Welcome to Sorous AI",
         "status": "running",
-        "model": OLLAMA_MODEL,
+        "model": GEMINI_MODEL,
         "live_web_search": True,
         "user_memory": True
     }
@@ -1099,6 +1105,15 @@ def generate_sorous_response(
     web_context: str = ""
 ) -> str:
 
+    if not GEMINI_API_KEY:
+        raise HTTPException(
+            status_code=500,
+            detail=(
+                "GEMINI_API_KEY is not configured on the server. "
+                "Add it in Render Environment Variables and redeploy."
+            )
+        )
+
     messages = build_ai_messages(
         user_id=user_id,
         user_name=user_name,
@@ -1106,78 +1121,128 @@ def generate_sorous_response(
         current_web_context=web_context
     )
 
+    if not messages:
+        raise HTTPException(
+            status_code=500,
+            detail="Sorous AI could not build the conversation context."
+        )
+
+    # Gemini's generateContent API keeps the system instruction separate
+    # from the normal conversation contents.
+    system_instruction = messages[0].get("content", "")
+    conversation = messages[1:]
+
+    contents = []
+
+    for message in conversation:
+        role = message.get("role", "user")
+        if role == "assistant":
+            role = "model"
+        elif role != "model":
+            role = "user"
+
+        text = str(message.get("content", "")).strip()
+        if not text:
+            continue
+
+        # Gemini expects the conversation roles to alternate. Merge
+        # consecutive messages with the same role if necessary.
+        if contents and contents[-1]["role"] == role:
+            contents[-1]["parts"][0]["text"] += "\n\n" + text
+        else:
+            contents.append({
+                "role": role,
+                "parts": [
+                    {"text": text}
+                ]
+            })
+
+    if not contents:
+        raise HTTPException(
+            status_code=500,
+            detail="Sorous AI conversation is empty."
+        )
+
     payload = {
-        "model": OLLAMA_MODEL,
-        "messages": messages,
-        "stream": False,
-        "options": {
+        "systemInstruction": {
+            "parts": [
+                {"text": system_instruction}
+            ]
+        },
+        "contents": contents,
+        "generationConfig": {
             "temperature": 0.6,
-            "num_predict": 800
+            "maxOutputTokens": 800
         }
     }
 
     try:
-
         response = requests.post(
-            OLLAMA_URL,
+            GEMINI_URL,
+            headers={
+                "Content-Type": "application/json",
+                "x-goog-api-key": GEMINI_API_KEY
+            },
             json=payload,
-            timeout=OLLAMA_TIMEOUT
+            timeout=GEMINI_TIMEOUT
         )
-
-    except requests.RequestException:
-
+    except requests.RequestException as error:
         raise HTTPException(
             status_code=503,
             detail=(
-                "Sorous AI engine is not available. "
-                "Please make sure Ollama is running."
+                "Gemini API connection failed. "
+                f"{str(error)}"
             )
         )
 
     if response.status_code != 200:
+        try:
+            error_data = response.json()
+            error_message = (
+                error_data
+                .get("error", {})
+                .get("message", "Unknown Gemini API error")
+            )
+        except Exception:
+            error_message = response.text[:1000]
 
         raise HTTPException(
             status_code=503,
-            detail=(
-                "Sorous AI engine returned an error. "
-                f"Please make sure '{OLLAMA_MODEL}' is installed."
-            )
+            detail=f"Gemini API error: {error_message}"
         )
 
     try:
-
         result = response.json()
+        candidates = result.get("candidates", [])
 
-        ai_response = (
-            result
-            .get(
-                "message",
-                {}
-            )
-            .get(
-                "content",
-                ""
-            )
-            .strip()
+        if not candidates:
+            raise ValueError("No candidates returned by Gemini")
+
+        parts = (
+            candidates[0]
+            .get("content", {})
+            .get("parts", [])
         )
 
-    except Exception:
+        ai_response = "".join(
+            str(part.get("text", ""))
+            for part in parts
+            if part.get("text")
+        ).strip()
 
+    except Exception as error:
         raise HTTPException(
             status_code=503,
             detail=(
-                "Invalid response received from "
-                "Sorous AI engine."
+                "Invalid response received from Gemini API. "
+                f"{str(error)}"
             )
         )
 
     if not ai_response:
-
         raise HTTPException(
             status_code=503,
-            detail=(
-                "Sorous AI did not generate a response."
-            )
+            detail="Gemini did not generate a response."
         )
 
     return ai_response
